@@ -17,7 +17,20 @@ import {
   TextContent,
 } from "@patternfly/react-core";
 import { CogIcon, DollarSignIcon } from "@patternfly/react-icons";
+import Link from "next/link";
 import icon from "../docs/icon-dark.png";
+
+const NAV_ITEMS = [
+  ["Master", "master"],
+  ["Core HRT", "core-hrt"],
+  ["FFS", "ffs"],
+  ["SRS", "srs"],
+  ["Domperidone", "domperidone"],
+  ["Ibutamoren", "ibutamoren"],
+  ["Depression", "depression"],
+  ["Coming Out", "coming-out"],
+  ["Substance Use", "substance-use"],
+];
 
 export default function Home() {
   return (
@@ -49,20 +62,21 @@ export default function Home() {
           topNav={
             <Nav aria-label="Nav" variant="horizontal">
               <NavList>
-                <NavItem itemId={0} isActive>
-                  Master
-                </NavItem>
-                <NavItem itemId={1}>Core HRT</NavItem>
-                <NavItem itemId={2}>FFS</NavItem>
-                <NavItem itemId={3}>SRS</NavItem>
-                <NavItem itemId={4}>Domperidone</NavItem>
-                <NavItem itemId={5}>Ibutamoren</NavItem>
-                <NavItem itemId={6}>Depression</NavItem>
-                <NavItem itemId={7}>Coming Out</NavItem>
-                <NavItem itemId={7}>Substance Use</NavItem>
+                {NAV_ITEMS.map((el, i) => (
+                  <NavItem
+                    itemId={i}
+                    key={i}
+                    isActive={window?.location.pathname.endsWith("/" + el[1])}
+                    to={"/" + el[1]}
+                    component={Link as unknown as React.ReactNode}
+                  >
+                    {el[0]}
+                  </NavItem>
+                ))}
               </NavList>
             </Nav>
           }
+          className="pf-c-page__header--centered"
         />
       }
       skipToContent={
@@ -72,7 +86,7 @@ export default function Home() {
     >
       <PageSection variant={PageSectionVariants.light}>
         <TextContent>
-          <Text component="h1">Diary</Text>
+          <Text component="h1">Body</Text>
         </TextContent>
       </PageSection>
     </Page>

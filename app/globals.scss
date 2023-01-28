@@ -9,5 +9,9 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 @import "~@patternfly/patternfly/patternfly-addons.scss";
 
 .pf-x-u-color--unset {
-  color: unset;
+  color: unset !important;
+}
+
+.pf-c-page__header--centered .pf-c-page__header-nav {
+  @extend .pf-u-justify-content-center;
 }
