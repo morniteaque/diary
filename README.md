@@ -8,6 +8,6 @@ An extensive transition diary site.
 
 ## License
 
-diary (c) 2023 Emmeryn Harper, Felicitas Pojtinger and contributors
+diary (c) 2023 Emmeryn Adkin, Felicitas Pojtinger and contributors
 
 SPDX-License-Identifier: AGPL-3.0
