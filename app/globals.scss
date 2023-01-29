@@ -15,3 +15,7 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 .pf-c-page__header--centered .pf-c-page__header-nav {
   @extend .pf-u-justify-content-center;
 }
+
+.pf-x-u-opacity-muted {
+  opacity: 30%;
+}
