@@ -14,7 +14,11 @@ import {
   PageSection,
   PageSectionVariants,
   SkipToContent,
+  Slider,
   Switch,
+  Tab,
+  Tabs,
+  TabTitleText,
   Text,
   TextContent,
   Toolbar,
@@ -47,6 +51,8 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [nsfw, setNSFW] = useState(false);
+  const [density, setDensity] = useState(75);
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <Page
@@ -135,7 +141,12 @@ export default function Home() {
       mainContainerId="main"
       additionalGroupedContent={
         (settingsOpen || helpOpen) && (
-          <PageSection variant={PageSectionVariants.light} isWidthLimited>
+          <PageSection
+            variant={PageSectionVariants.light}
+            isWidthLimited
+            isCenterAligned
+            type="tabs"
+          >
             {settingsOpen ? (
               <Toolbar>
                 <ToolbarContent>
@@ -149,11 +160,37 @@ export default function Home() {
                     />
                   </ToolbarItem>
 
-                  <ToolbarItem variant="separator" />
+                  <Divider
+                    orientation={{ default: "vertical" }}
+                    inset={{ default: "insetXl" }}
+                    className="pf-u-ml-sm pf-u-mr-lg"
+                  />
 
-                  <ToolbarItem>Slider</ToolbarItem>
+                  <ToolbarItem
+                    className="pf-u-flex-fill"
+                    alignment={{ default: "alignRight" }}
+                  >
+                    <Slider
+                      value={density}
+                      isInputVisible
+                      inputPosition="right"
+                      inputValue={density}
+                      inputLabel="% Density"
+                      onChange={setDensity}
+                      onInputCapture={(e) =>
+                        setDensity(
+                          parseInt((e.target as HTMLInputElement).value)
+                        )
+                      }
+                      className="pf-u-mt-md"
+                    />
+                  </ToolbarItem>
 
-                  <ToolbarItem variant="separator" />
+                  <Divider
+                    orientation={{ default: "vertical" }}
+                    inset={{ default: "insetXl" }}
+                    className="pf-u-ml-sm pf-u-mr-lg"
+                  />
 
                   <ToolbarItem>
                     <Button aria-label="Filters" variant={ButtonVariant.plain}>
@@ -163,7 +200,31 @@ export default function Home() {
                 </ToolbarContent>
               </Toolbar>
             ) : (
-              "Help"
+              <div className="pf-u-p-md">
+                <Tabs
+                  activeKey={activeTab}
+                  onSelect={(_, v) => setActiveTab(parseInt(v as string))}
+                  usePageInsets
+                  aria-label="Help tabs"
+                  role="region"
+                  className="pf-u-justify-content-center"
+                >
+                  <Tab
+                    eventKey={0}
+                    title={<TabTitleText>Welcome</TabTitleText>}
+                    aria-label="Tab for the welcome section"
+                  >
+                    <div className="pf-u-py-md">Welcome</div>
+                  </Tab>
+                  <Tab
+                    eventKey={1}
+                    title={<TabTitleText>About Me</TabTitleText>}
+                    aria-label="Tab for the about me section"
+                  >
+                    <div className="pf-u-py-md">About Me</div>
+                  </Tab>
+                </Tabs>
+              </div>
             )}
           </PageSection>
         )
