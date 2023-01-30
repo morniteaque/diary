@@ -21,9 +21,13 @@ import {
   TabTitleText,
   Text,
   TextContent,
+  TextVariants,
+  ToggleGroup,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  Tooltip,
 } from "@patternfly/react-core";
 import {
   CogIcon,
@@ -51,7 +55,7 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [nsfw, setNSFW] = useState(false);
-  const [density, setDensity] = useState(75);
+  const [detail, setDetail] = useState(75);
   const [activeTab, setActiveTab] = useState(0);
 
   return (
@@ -63,50 +67,37 @@ export default function Home() {
             <PageHeaderTools>
               <PageHeaderToolsGroup>
                 <PageHeaderToolsItem>
-                  <Button
-                    aria-label="Settings"
-                    onClick={() => {
-                      setHelpOpen(false);
-                      setSettingsOpen((v) => !v);
-                    }}
-                    isActive={settingsOpen}
-                    variant={
-                      settingsOpen ? ButtonVariant.control : ButtonVariant.plain
-                    }
+                  <ToggleGroup
+                    aria-label="Settings and help toggles"
+                    className="pf-u-py-sm"
                   >
-                    <CogIcon />
-                  </Button>
-                </PageHeaderToolsItem>
+                    <ToggleGroupItem
+                      icon={<CogIcon />}
+                      aria-label="Toggle settings"
+                      isSelected={settingsOpen}
+                      onChange={() => {
+                        setHelpOpen(false);
+                        setSettingsOpen((v) => !v);
+                      }}
+                    />
 
-                <PageHeaderToolsItem>
-                  <Button
-                    aria-label="Help"
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      setHelpOpen((v) => !v);
-                    }}
-                    isActive={helpOpen}
-                    variant={
-                      helpOpen ? ButtonVariant.control : ButtonVariant.plain
-                    }
-                  >
-                    <HelpIcon />
-                  </Button>
+                    <ToggleGroupItem
+                      icon={<HelpIcon />}
+                      aria-label="Toggle help"
+                      isSelected={helpOpen}
+                      onChange={() => {
+                        setSettingsOpen(false);
+                        setHelpOpen((v) => !v);
+                      }}
+                    />
+                  </ToggleGroup>
                 </PageHeaderToolsItem>
-
-                <Divider
-                  inset={{ default: "insetMd" }}
-                  orientation={{
-                    default: "vertical",
-                  }}
-                  className="pf-x-u-opacity-muted pf-u-mx-sm"
-                />
 
                 <PageHeaderToolsItem>
                   <Button
                     aria-label="Donate"
                     variant={ButtonVariant.link}
-                    className="pf-x-u-color--unset"
+                    className="pf-x-u-color--unset pf-u-ml-sm"
                   >
                     Donate
                     <ExternalLinkAltIcon className="pf-u-ml-sm" />
@@ -146,6 +137,9 @@ export default function Home() {
             isWidthLimited
             isCenterAligned
             type="tabs"
+            stickyOnBreakpoint={{
+              default: "top",
+            }}
           >
             {settingsOpen ? (
               <Toolbar>
@@ -170,20 +164,25 @@ export default function Home() {
                     className="pf-u-flex-fill"
                     alignment={{ default: "alignRight" }}
                   >
-                    <Slider
-                      value={density}
-                      isInputVisible
-                      inputPosition="right"
-                      inputValue={density}
-                      inputLabel="% Density"
-                      onChange={setDensity}
-                      onInputCapture={(e) =>
-                        setDensity(
-                          parseInt((e.target as HTMLInputElement).value)
-                        )
-                      }
-                      className="pf-u-mt-md"
-                    />
+                    <Tooltip
+                      content="Amount of detail to show for a given entry"
+                      position="bottom"
+                    >
+                      <Slider
+                        value={detail}
+                        isInputVisible
+                        inputPosition="right"
+                        inputValue={detail}
+                        inputLabel="%"
+                        onChange={setDetail}
+                        onInputCapture={(e) =>
+                          setDetail(
+                            parseInt((e.target as HTMLInputElement).value)
+                          )
+                        }
+                        className="pf-u-mt-md"
+                      />
+                    </Tooltip>
                   </ToolbarItem>
 
                   <Divider
@@ -193,14 +192,22 @@ export default function Home() {
                   />
 
                   <ToolbarItem>
-                    <Button aria-label="Filters" variant={ButtonVariant.plain}>
-                      <FilterIcon />
-                    </Button>
+                    <Tooltip
+                      content="Toggle the available filters"
+                      position="bottom"
+                    >
+                      <Button
+                        aria-label="Filters"
+                        variant={ButtonVariant.plain}
+                      >
+                        <FilterIcon />
+                      </Button>
+                    </Tooltip>
                   </ToolbarItem>
                 </ToolbarContent>
               </Toolbar>
             ) : (
-              <div className="pf-u-p-md">
+              <div className="pf-u-py-sm pf-u-px-md">
                 <Tabs
                   activeKey={activeTab}
                   onSelect={(_, v) => setActiveTab(parseInt(v as string))}
@@ -214,14 +221,71 @@ export default function Home() {
                     title={<TabTitleText>Welcome</TabTitleText>}
                     aria-label="Tab for the welcome section"
                   >
-                    <div className="pf-u-py-md">Welcome</div>
+                    <TextContent className="pf-u-py-md">
+                      <Text component={TextVariants.p}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Nullam vel enim id eros ultricies vehicula eu eu erat.
+                        Curabitur sollicitudin vel eros ac aliquam. Aenean at
+                        facilisis dolor. Aenean turpis sapien, pulvinar vitae
+                        purus eu, maximus placerat mauris. Sed id lacus quis
+                        velit hendrerit aliquet. Interdum et malesuada fames ac
+                        ante ipsum primis in faucibus. Donec elementum, diam vel
+                        commodo sollicitudin, justo purus maximus eros, nec
+                        placerat lectus dolor sed tellus. Mauris scelerisque
+                        quam est, ut aliquam magna tristique pretium. Etiam
+                        vitae libero quis augue faucibus semper sed quis magna.
+                        Suspendisse non risus in augue porta efficitur id ut
+                        justo. Praesent maximus, velit vitae suscipit volutpat,
+                        elit leo viverra velit, eget hendrerit lectus lorem id
+                        mauris. Vestibulum porttitor luctus urna, ultricies
+                        lobortis massa tristique vel.
+                      </Text>
+
+                      <Text component={TextVariants.p}>
+                        Vestibulum consequat velit sit amet volutpat porta.
+                        Praesent egestas, eros non dictum sodales, est metus
+                        rutrum ligula, non congue turpis leo at lorem. Nam at
+                        pretium risus. Curabitur eu eros eu magna condimentum
+                        laoreet at sit amet sem. Mauris velit nulla, commodo sed
+                        euismod ut, aliquet sit amet metus. Quisque gravida
+                        lacus non fringilla placerat. Curabitur euismod velit eu
+                        ligula pharetra molestie. Class aptent taciti sociosqu
+                        ad litora torquent per conubia nostra, per inceptos
+                        himenaeos. Donec condimentum luctus odio et semper.
+                        Maecenas id est a quam tristique porta. Integer posuere
+                        arcu justo, nec dictum magna consectetur vel. Donec
+                        lectus ex, tincidunt vitae odio sit amet, finibus auctor
+                        mauris. Proin volutpat, felis vel commodo hendrerit,
+                        ipsum odio malesuada urna, in placerat eros felis et
+                        sem. Morbi vel laoreet turpis, sit amet laoreet nisi.
+                      </Text>
+                    </TextContent>
                   </Tab>
                   <Tab
                     eventKey={1}
                     title={<TabTitleText>About Me</TabTitleText>}
                     aria-label="Tab for the about me section"
                   >
-                    <div className="pf-u-py-md">About Me</div>
+                    <TextContent className="pf-u-py-md">
+                      <Text component={TextVariants.p}>
+                        Vestibulum consequat velit sit amet volutpat porta.
+                        Praesent egestas, eros non dictum sodales, est metus
+                        rutrum ligula, non congue turpis leo at lorem. Nam at
+                        pretium risus. Curabitur eu eros eu magna condimentum
+                        laoreet at sit amet sem. Mauris velit nulla, commodo sed
+                        euismod ut, aliquet sit amet metus. Quisque gravida
+                        lacus non fringilla placerat. Curabitur euismod velit eu
+                        ligula pharetra molestie. Class aptent taciti sociosqu
+                        ad litora torquent per conubia nostra, per inceptos
+                        himenaeos. Donec condimentum luctus odio et semper.
+                        Maecenas id est a quam tristique porta. Integer posuere
+                        arcu justo, nec dictum magna consectetur vel. Donec
+                        lectus ex, tincidunt vitae odio sit amet, finibus auctor
+                        mauris. Proin volutpat, felis vel commodo hendrerit,
+                        ipsum odio malesuada urna, in placerat eros felis et
+                        sem. Morbi vel laoreet turpis, sit amet laoreet nisi.
+                      </Text>
+                    </TextContent>
                   </Tab>
                 </Tabs>
               </div>

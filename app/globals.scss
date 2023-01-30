@@ -19,3 +19,13 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 .pf-x-u-opacity-muted {
   opacity: 30%;
 }
+
+.pf-c-page__header .pf-c-toggle-group__button {
+  &.pf-m-selected,
+  &:hover,
+  &:focus {
+    .pf-c-toggle-group__icon {
+      color: var(--pf-global--Color--dark-100);
+    }
+  }
+}
