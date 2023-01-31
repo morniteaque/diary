@@ -57,6 +57,7 @@ export default function Home() {
   const [nsfw, setNSFW] = useState(false);
   const [detail, setDetail] = useState(75);
   const [activeTab, setActiveTab] = useState(0);
+  const [filters, setFilters] = useState(false);
 
   return (
     <Page
@@ -142,70 +143,120 @@ export default function Home() {
             }}
           >
             {settingsOpen ? (
-              <Toolbar>
-                <ToolbarContent>
-                  <ToolbarItem>
-                    <Switch
-                      label="NSFW"
-                      labelOff="NSFW"
-                      isChecked={nsfw}
-                      onChange={setNSFW}
-                      isReversed
-                    />
-                  </ToolbarItem>
-
-                  <Divider
-                    orientation={{ default: "vertical" }}
-                    inset={{ default: "insetXl" }}
-                    className="pf-u-ml-sm pf-u-mr-lg"
-                  />
-
-                  <ToolbarItem
-                    className="pf-u-flex-fill"
-                    alignment={{ default: "alignRight" }}
-                  >
-                    <Tooltip
-                      content="Amount of detail to show for a given entry"
-                      position="bottom"
-                    >
-                      <Slider
-                        value={detail}
-                        isInputVisible
-                        inputPosition="right"
-                        inputValue={detail}
-                        inputLabel="%"
-                        onChange={setDetail}
-                        onInputCapture={(e) =>
-                          setDetail(
-                            parseInt((e.target as HTMLInputElement).value)
-                          )
-                        }
-                        className="pf-u-mt-md"
+              <>
+                <Toolbar>
+                  <ToolbarContent>
+                    <ToolbarItem className="pf-u-display-none pf-u-display-inline-flex-on-md">
+                      <Switch
+                        label="NSFW"
+                        labelOff="NSFW"
+                        isChecked={nsfw}
+                        onChange={setNSFW}
+                        isReversed
                       />
-                    </Tooltip>
-                  </ToolbarItem>
+                    </ToolbarItem>
 
-                  <Divider
-                    orientation={{ default: "vertical" }}
-                    inset={{ default: "insetXl" }}
-                    className="pf-u-ml-sm pf-u-mr-lg"
-                  />
+                    <Divider
+                      orientation={{ default: "vertical" }}
+                      inset={{ default: "insetXl" }}
+                      className="pf-u-ml-sm pf-u-mr-lg pf-u-display-none pf-u-display-inline-flex-on-md"
+                    />
 
-                  <ToolbarItem>
-                    <Tooltip
-                      content="Toggle the available filters"
-                      position="bottom"
+                    <ToolbarItem
+                      className="pf-u-flex-fill pf-u-mr-0 pf-u-mr-md-on-md"
+                      alignment={{ default: "alignRight" }}
                     >
-                      <Button
-                        aria-label="Filters"
-                        variant={ButtonVariant.plain}
+                      <Tooltip
+                        content="Amount of detail to show for a given entry"
+                        position="bottom"
                       >
-                        <FilterIcon />
-                      </Button>
-                    </Tooltip>
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
+                        <Slider
+                          value={detail}
+                          isInputVisible
+                          inputPosition="right"
+                          inputValue={detail}
+                          inputLabel="%"
+                          onChange={setDetail}
+                          onInputCapture={(e) =>
+                            setDetail(
+                              parseInt((e.target as HTMLInputElement).value)
+                            )
+                          }
+                          className="pf-u-mt-md"
+                        />
+                      </Tooltip>
+                    </ToolbarItem>
+
+                    <Divider
+                      orientation={{ default: "vertical" }}
+                      inset={{ default: "insetXl" }}
+                      className="pf-u-ml-sm pf-u-mr-lg pf-u-display-none pf-u-display-inline-flex-on-md"
+                    />
+
+                    <ToolbarItem className="pf-u-display-none pf-u-display-inline-flex-on-md">
+                      <ToggleGroup aria-label="Filter controls">
+                        <Tooltip
+                          content="Toggle the available filters"
+                          position="bottom"
+                        >
+                          <ToggleGroupItem
+                            icon={<FilterIcon />}
+                            aria-label="Toggle the available filters"
+                            isSelected={filters}
+                            onChange={() => setFilters((v) => !v)}
+                          />
+                        </Tooltip>
+                      </ToggleGroup>
+                    </ToolbarItem>
+
+                    <Divider
+                      orientation={{ default: "horizontal" }}
+                      className="pf-u-pt-lg pf-u-pb-md pf-u-display-flex pf-u-display-none-on-md"
+                    />
+
+                    <ToolbarItem className="pf-u-display-block pf-u-display-none-on-md">
+                      <Switch
+                        label="NSFW"
+                        labelOff="NSFW"
+                        isChecked={nsfw}
+                        onChange={setNSFW}
+                        isReversed
+                      />
+                    </ToolbarItem>
+
+                    <ToolbarItem
+                      alignment={{
+                        default: "alignRight",
+                      }}
+                      className="pf-u-display-block pf-u-display-none-on-md"
+                    >
+                      <ToggleGroup aria-label="Filter controls">
+                        <Tooltip
+                          content="Toggle the available filters"
+                          position="bottom"
+                        >
+                          <ToggleGroupItem
+                            icon={<FilterIcon />}
+                            aria-label="Toggle the available filters"
+                            isSelected={filters}
+                            onChange={() => setFilters((v) => !v)}
+                          />
+                        </Tooltip>
+                      </ToggleGroup>
+                    </ToolbarItem>
+                  </ToolbarContent>
+                </Toolbar>
+
+                {filters && (
+                  <div className="pf-u-pb-md pf-u-px-md">
+                    <Divider
+                      orientation={{ default: "horizontal" }}
+                      className="pf-u-pb-md"
+                    />
+                    Filters
+                  </div>
+                )}
+              </>
             ) : (
               <div className="pf-u-py-sm pf-u-px-md">
                 <Tabs
