@@ -28,6 +28,9 @@ import {
   PageHeaderToolsItem,
   PageSection,
   PageSectionVariants,
+  Panel,
+  PanelMain,
+  PanelMainBody,
   SkipToContent,
   Slider,
   Switch,
@@ -50,6 +53,7 @@ import {
   ExternalLinkAltIcon,
   FilterIcon,
   HelpIcon,
+  StampIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
 import { useState } from "react";
@@ -380,7 +384,7 @@ export default function Home() {
       <PageSection isFilled padding={{ default: "noPadding" }}>
         <Drawer
           isExpanded={selectedEntry !== ""}
-          className="pf-m-inline-on-2xl pf-c-drawer--centered"
+          className="pf-m-inline-on-2xl"
         >
           <DrawerContent
             className="pf-m-no-background"
@@ -411,49 +415,85 @@ export default function Home() {
               </DrawerPanelContent>
             }
           >
-            <DrawerContentBody hasPadding>
-              <Grid
-                hasGutter
-                role="region"
-                aria-label="Selectable card container"
-              >
-                {ENTRIES.map((entry, key) => (
-                  <GridItem key={key} span={6}>
-                    <Card
-                      isSelectable
-                      isFullHeight
-                      onKeyDown={(e) =>
-                        e.key === " " &&
-                        setSelectedEntry((e) =>
-                          e === entry.date ? "" : entry.date
-                        )
-                      }
-                      onClick={() =>
-                        setSelectedEntry((e) =>
-                          e === entry.date ? "" : entry.date
-                        )
-                      }
-                      onSelectableInputChange={() =>
-                        setSelectedEntry((e) =>
-                          e === entry.date ? "" : entry.date
-                        )
-                      }
-                      isSelectableRaised
-                      isSelected={selectedEntry === entry.date}
-                      hasSelectableInput
-                      selectableInputAriaLabel="Select this card"
+            <DrawerContentBody className="pf-c-drawer__body---centered">
+              <div className="pf-c-drawer__body__wrapper--centered pf-u-p-md">
+                <Grid
+                  hasGutter
+                  role="region"
+                  aria-label="Selectable card container"
+                >
+                  {ENTRIES.map((entry, key) => (
+                    <GridItem key={key} span={6}>
+                      <Card
+                        isSelectable
+                        isFullHeight
+                        onKeyDown={(e) =>
+                          e.key === " " &&
+                          setSelectedEntry((e) =>
+                            e === entry.date ? "" : entry.date
+                          )
+                        }
+                        onClick={() =>
+                          setSelectedEntry((e) =>
+                            e === entry.date ? "" : entry.date
+                          )
+                        }
+                        onSelectableInputChange={() =>
+                          setSelectedEntry((e) =>
+                            e === entry.date ? "" : entry.date
+                          )
+                        }
+                        isSelectableRaised
+                        isSelected={selectedEntry === entry.date}
+                        hasSelectableInput
+                        selectableInputAriaLabel="Select this card"
+                      >
+                        <CardTitle>{entry.date}</CardTitle>
+                        <CardBody>
+                          Lorem ipsum dolor sit amet consectetur adipisicing
+                          elit. Nemo tenetur unde doloremque quae inventore,
+                          itaque accusantium ducimus modi quaerat, illo ullam
+                          quod possimus cum sit?
+                        </CardBody>
+                      </Card>
+                    </GridItem>
+                  ))}
+                </Grid>
+              </div>
+
+              <Panel>
+                <PanelMain>
+                  <PanelMainBody>
+                    <Flex
+                      justifyContent={{
+                        default: "justifyContentSpaceBetween",
+                      }}
+                      alignItems={{
+                        default: "alignItemsCenter",
+                      }}
                     >
-                      <CardTitle>{entry.date}</CardTitle>
-                      <CardBody>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Nemo tenetur unde doloremque quae inventore, itaque
-                        accusantium ducimus modi quaerat, illo ullam quod
-                        possimus cum sit?
-                      </CardBody>
-                    </Card>
-                  </GridItem>
-                ))}
-              </Grid>
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md">
+                        <a
+                          href="https://github.com/morniteaque/diary"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="pf-x-u-color--unset"
+                        >
+                          © 2023 Emmeryn Adkin, Felicitas Pojtinger and
+                          contributors
+                        </a>
+                      </FlexItem>
+
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm">
+                        <Link href="/imprint" className="pf-x-u-color--unset">
+                          <StampIcon className="pf-u-mr-sm" />
+                          Imprint
+                        </Link>
+                      </FlexItem>
+                    </Flex>
+                  </PanelMainBody>
+                </PanelMain>
+              </Panel>
             </DrawerContentBody>
           </DrawerContent>
         </Drawer>
