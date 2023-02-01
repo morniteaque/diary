@@ -2,7 +2,22 @@ import {
   Brand,
   Button,
   ButtonVariant,
+  Card,
+  CardBody,
+  CardTitle,
   Divider,
+  Drawer,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
+  Flex,
+  FlexItem,
+  Grid,
+  GridItem,
   Nav,
   NavItem,
   NavList,
@@ -22,6 +37,7 @@ import {
   Text,
   TextContent,
   TextVariants,
+  Title,
   ToggleGroup,
   ToggleGroupItem,
   Toolbar,
@@ -51,6 +67,21 @@ const NAV_ITEMS = [
   ["Substance Use", "substance-use"],
 ];
 
+const ENTRIES = [
+  {
+    date: "2023-01-28",
+  },
+  {
+    date: "2023-01-29",
+  },
+  {
+    date: "2023-01-30",
+  },
+  {
+    date: "2023-01-31",
+  },
+];
+
 export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -58,6 +89,7 @@ export default function Home() {
   const [detail, setDetail] = useState(75);
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState("");
 
   return (
     <Page
@@ -345,10 +377,86 @@ export default function Home() {
         )
       }
     >
-      <PageSection>
-        <TextContent>
-          <Text component="h1">Body</Text>
-        </TextContent>
+      <PageSection isFilled padding={{ default: "noPadding" }}>
+        <Drawer
+          isExpanded={selectedEntry !== ""}
+          className="pf-m-inline-on-2xl pf-c-drawer--centered"
+        >
+          <DrawerContent
+            className="pf-m-no-background"
+            panelContent={
+              <DrawerPanelContent isResizable>
+                <DrawerHead>
+                  <Title headingLevel="h2" size="xl">
+                    {selectedEntry}
+                  </Title>
+                  <DrawerActions>
+                    <DrawerCloseButton onClick={() => setSelectedEntry("")} />
+                  </DrawerActions>
+                </DrawerHead>
+                <DrawerPanelBody>
+                  <Flex
+                    spaceItems={{ default: "spaceItemsLg" }}
+                    direction={{ default: "column" }}
+                  >
+                    <FlexItem>
+                      <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Fuga eos modi corporis quos sunt nesciunt velit
+                        explicabo esse quod dicta?
+                      </p>
+                    </FlexItem>
+                  </Flex>
+                </DrawerPanelBody>
+              </DrawerPanelContent>
+            }
+          >
+            <DrawerContentBody hasPadding>
+              <Grid
+                hasGutter
+                role="region"
+                aria-label="Selectable card container"
+              >
+                {ENTRIES.map((entry, key) => (
+                  <GridItem key={key} span={6}>
+                    <Card
+                      isSelectable
+                      isFullHeight
+                      onKeyDown={(e) =>
+                        e.key === " " &&
+                        setSelectedEntry((e) =>
+                          e === entry.date ? "" : entry.date
+                        )
+                      }
+                      onClick={() =>
+                        setSelectedEntry((e) =>
+                          e === entry.date ? "" : entry.date
+                        )
+                      }
+                      onSelectableInputChange={() =>
+                        setSelectedEntry((e) =>
+                          e === entry.date ? "" : entry.date
+                        )
+                      }
+                      isSelectableRaised
+                      isSelected={selectedEntry === entry.date}
+                      hasSelectableInput
+                      selectableInputAriaLabel="Select this card"
+                    >
+                      <CardTitle>{entry.date}</CardTitle>
+                      <CardBody>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Nemo tenetur unde doloremque quae inventore, itaque
+                        accusantium ducimus modi quaerat, illo ullam quod
+                        possimus cum sit?
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                ))}
+              </Grid>
+            </DrawerContentBody>
+          </DrawerContent>
+        </Drawer>
       </PageSection>
     </Page>
   );

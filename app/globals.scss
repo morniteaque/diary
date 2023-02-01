@@ -29,3 +29,15 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
     }
   }
 }
+
+.pf-c-drawer--centered .pf-c-drawer__content {
+  .pf-c-drawer__body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pf-l-grid {
+    max-width: 50rem;
+  }
+}
