@@ -39,7 +39,9 @@ import {
   TabTitleText,
   Text,
   TextContent,
+  TextInput,
   TextVariants,
+  Timestamp,
   Title,
   ToggleGroup,
   ToggleGroupItem,
@@ -49,6 +51,9 @@ import {
   Tooltip,
 } from "@patternfly/react-core";
 import {
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CogIcon,
   ExternalLinkAltIcon,
   FilterIcon,
@@ -94,6 +99,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState("");
+  const [currentDay, setCurrentDay] = useState(0);
+  const [totalDays] = useState(56);
 
   return (
     <Page
@@ -416,6 +423,110 @@ export default function Home() {
             }
           >
             <DrawerContentBody className="pf-c-drawer__body---centered">
+              <Panel>
+                <PanelMain>
+                  <PanelMainBody>
+                    <Flex
+                      justifyContent={{
+                        default: "justifyContentSpaceBetween",
+                      }}
+                      alignItems={{
+                        default: "alignItemsCenter",
+                      }}
+                    >
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md">
+                        <CalendarIcon className="pf-u-mr-sm" />{" "}
+                        <div className="pf-x-timestamp-wrapper pf-u-display-inline">
+                          <Timestamp
+                            dateFormat="short"
+                            date={new Date("2023-01-28")}
+                          />
+                          {" - "}
+                          <Timestamp
+                            dateFormat="short"
+                            date={new Date("2023-01-31")}
+                          />
+                        </div>
+                      </FlexItem>
+
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm">
+                        <Toolbar>
+                          <ToolbarContent>
+                            <ToolbarItem>
+                              <Button
+                                variant="plain"
+                                onClick={() =>
+                                  setCurrentDay((d) => {
+                                    const newValue = d - 4;
+
+                                    if (
+                                      newValue <= totalDays - 4 &&
+                                      newValue >= 0
+                                    ) {
+                                      return newValue;
+                                    }
+
+                                    return d;
+                                  })
+                                }
+                              >
+                                <ChevronLeftIcon />
+                              </Button>
+                            </ToolbarItem>
+
+                            <ToolbarItem>
+                              <TextInput
+                                min="0"
+                                value={currentDay}
+                                type="number"
+                                onChange={(value) => {
+                                  const newValue = parseInt(value);
+
+                                  if (
+                                    newValue <= totalDays - 4 &&
+                                    newValue >= 0
+                                  ) {
+                                    setCurrentDay(newValue);
+                                  }
+                                }}
+                                aria-label="Current day input"
+                                style={{
+                                  width:
+                                    currentDay.toString().length + 4 + "ch",
+                                }}
+                                className="pf-u-mr-sm"
+                              />
+                              <span>of {totalDays}</span>
+                            </ToolbarItem>
+
+                            <ToolbarItem
+                              onClick={() =>
+                                setCurrentDay((d) => {
+                                  const newValue = d + 4;
+
+                                  if (
+                                    newValue <= totalDays - 4 &&
+                                    newValue >= 0
+                                  ) {
+                                    return newValue;
+                                  }
+
+                                  return d;
+                                })
+                              }
+                            >
+                              <Button variant="plain">
+                                <ChevronRightIcon />
+                              </Button>
+                            </ToolbarItem>
+                          </ToolbarContent>
+                        </Toolbar>
+                      </FlexItem>
+                    </Flex>
+                  </PanelMainBody>
+                </PanelMain>
+              </Panel>
+
               <div className="pf-c-drawer__body__wrapper--centered pf-u-p-md">
                 <Grid
                   hasGutter

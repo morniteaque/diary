@@ -46,3 +46,7 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
     max-width: 50rem;
   }
 }
+
+.pf-x-timestamp-wrapper {
+  color: var(--pf-global--Color--200);
+}
