@@ -50,3 +50,14 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 .pf-x-timestamp-wrapper {
   color: var(--pf-global--Color--200);
 }
+
+.pf-x-pagination {
+  @media screen and (max-width: calc($pf-global--breakpoint--sm - 1px)) {
+    width: 100%;
+
+    .pf-c-toolbar__content-section {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}

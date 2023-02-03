@@ -51,7 +51,7 @@ import {
   Tooltip,
 } from "@patternfly/react-core";
 import {
-  CalendarIcon,
+  CalendarDayIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CogIcon,
@@ -396,7 +396,7 @@ export default function Home() {
           <DrawerContent
             className="pf-m-no-background"
             panelContent={
-              <DrawerPanelContent isResizable>
+              <DrawerPanelContent>
                 <DrawerHead>
                   <Title headingLevel="h2" size="xl">
                     {selectedEntry}
@@ -434,8 +434,8 @@ export default function Home() {
                         default: "alignItemsCenter",
                       }}
                     >
-                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md">
-                        <CalendarIcon className="pf-u-mr-sm" />{" "}
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md pf-u-display-none pf-u-display-block-on-sm">
+                        <CalendarDayIcon className="pf-u-mr-sm" />{" "}
                         <div className="pf-x-timestamp-wrapper pf-u-display-inline">
                           <Timestamp
                             dateFormat="short"
@@ -449,9 +449,9 @@ export default function Home() {
                         </div>
                       </FlexItem>
 
-                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm">
-                        <Toolbar>
-                          <ToolbarContent>
+                      <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-x-pagination">
+                        <Toolbar className="pf-u-py-0">
+                          <ToolbarContent className="pf-u-px-0">
                             <ToolbarItem>
                               <Button
                                 variant="plain"
@@ -475,6 +475,7 @@ export default function Home() {
                             </ToolbarItem>
 
                             <ToolbarItem>
+                              <span>Day</span>
                               <TextInput
                                 min="0"
                                 value={currentDay}
@@ -494,7 +495,7 @@ export default function Home() {
                                   width:
                                     currentDay.toString().length + 4 + "ch",
                                 }}
-                                className="pf-u-mr-sm"
+                                className="pf-u-mx-sm"
                               />
                               <span>of {totalDays}</span>
                             </ToolbarItem>
