@@ -55,6 +55,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CogIcon,
+  CompressIcon,
+  ExpandIcon,
   ExternalLinkAltIcon,
   FilterIcon,
   HelpIcon,
@@ -101,6 +103,7 @@ export default function Home() {
   const [selectedEntry, setSelectedEntry] = useState("");
   const [currentDay, setCurrentDay] = useState(0);
   const [totalDays] = useState(56);
+  const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
 
   return (
     <Page
@@ -396,12 +399,28 @@ export default function Home() {
           <DrawerContent
             className="pf-m-no-background"
             panelContent={
-              <DrawerPanelContent>
+              <DrawerPanelContent
+                widths={
+                  diaryEntryFullscreen
+                    ? {
+                        default: "width_100",
+                      }
+                    : undefined
+                }
+              >
                 <DrawerHead>
                   <Title headingLevel="h2" size="xl">
                     {selectedEntry}
                   </Title>
                   <DrawerActions>
+                    <Button
+                      variant="plain"
+                      onClick={() => setDiaryEntryFullscreen((v) => !v)}
+                      className="pf-u-display-none pf-u-display-block-on-md"
+                    >
+                      {diaryEntryFullscreen ? <CompressIcon /> : <ExpandIcon />}
+                    </Button>
+
                     <DrawerCloseButton onClick={() => setSelectedEntry("")} />
                   </DrawerActions>
                 </DrawerHead>
