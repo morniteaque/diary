@@ -80,16 +80,16 @@ const NAV_ITEMS = [
 
 const ENTRIES = [
   {
-    date: "2023-01-28",
+    title: "2023-01-28: Lorem",
   },
   {
-    date: "2023-01-29",
+    title: "2023-01-29: Amet",
   },
   {
-    date: "2023-01-30",
+    title: "2023-01-30: Consectur",
   },
   {
-    date: "2023-01-31",
+    title: "2023-01-31: Ducimus",
   },
 ];
 
@@ -405,7 +405,11 @@ export default function Home() {
                     ? {
                         default: "width_100",
                       }
-                    : undefined
+                    : {
+                        lg: "width_50",
+                        xl: "width_33",
+                        "2xl": "width_33",
+                      }
                 }
               >
                 <DrawerHead>
@@ -561,30 +565,30 @@ export default function Home() {
                         onKeyDown={(e) =>
                           e.key === " " &&
                           setSelectedEntry((e) =>
-                            e === entry.date ? "" : entry.date
+                            e === entry.title ? "" : entry.title
                           )
                         }
                         onClick={() =>
                           setSelectedEntry((e) =>
-                            e === entry.date ? "" : entry.date
+                            e === entry.title ? "" : entry.title
                           )
                         }
                         onSelectableInputChange={() =>
                           setSelectedEntry((e) =>
-                            e === entry.date ? "" : entry.date
+                            e === entry.title ? "" : entry.title
                           )
                         }
                         isSelectableRaised
-                        isSelected={selectedEntry === entry.date}
+                        isSelected={selectedEntry === entry.title}
                         hasSelectableInput
                         selectableInputAriaLabel="Select this card"
                       >
-                        <CardTitle>{entry.date}</CardTitle>
+                        <CardTitle>{entry.title}</CardTitle>
                         <CardBody>
                           Lorem ipsum dolor sit amet consectetur adipisicing
                           elit. Nemo tenetur unde doloremque quae inventore,
                           itaque accusantium ducimus modi quaerat, illo ullam
-                          quod possimus cum sit?
+                          quod possimus cum sit …
                         </CardBody>
                       </Card>
                     </GridItem>
