@@ -62,8 +62,22 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
   }
 }
 
+.pf-c-nav__link:focus:not(.pf-m-current) {
+  @extend .pf-x-u-color--unset;
+
+  &::before {
+    display: none;
+  }
+}
+
 .pf-m-current,
 .pf-c-nav__link:hover {
+  &:hover:not(.pf-m-current) {
+    &::before {
+      display: none;
+    }
+  }
+
   &.pf-x-navlink {
     &-everything {
       color: #2b9af3;

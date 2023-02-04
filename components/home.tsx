@@ -160,16 +160,18 @@ export default function Home() {
               <NavList>
                 {TOPICS.map((el, i) => (
                   <NavItem
+                    component="button"
                     itemId={i}
                     key={i}
                     isActive={activeTopics.includes(el[1])}
                     onClick={() =>
-                      !(el[1] === "everything") &&
-                      setActiveTopics((o) =>
-                        o.includes(el[1])
-                          ? o.filter((j) => j !== el[1])
-                          : [...o, el[1]]
-                      )
+                      el[1] === "everything"
+                        ? setActiveTopics(["everything"])
+                        : setActiveTopics((o) =>
+                            o.includes(el[1])
+                              ? o.filter((j) => j !== el[1])
+                              : [...o, el[1]]
+                          )
                     }
                     className={"pf-x-navlink-" + el[1]}
                   >
@@ -503,7 +505,7 @@ export default function Home() {
 
                                     if (
                                       newValue <= totalWeeks - 1 &&
-                                      newValue >= 0
+                                      newValue > 0
                                     ) {
                                       return newValue;
                                     }
