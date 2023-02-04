@@ -61,3 +61,80 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
     }
   }
 }
+
+.pf-m-current,
+.pf-c-nav__link:hover {
+  &.pf-x-navlink {
+    &-everything {
+      color: #2b9af3;
+
+      &::before {
+        border-color: #2b9af3;
+      }
+    }
+
+    &-hrt {
+      color: #6ec664 !important;
+
+      &::before {
+        border-color: #6ec664;
+      }
+    }
+
+    &-ffs {
+      color: #009596 !important;
+
+      &::before {
+        border-color: #009596;
+      }
+    }
+
+    &-srs {
+      color: #a18fff !important;
+
+      &::before {
+        border-color: #a18fff;
+      }
+    }
+
+    &-domperidone {
+      color: #35caed !important;
+
+      &::before {
+        border-color: #35caed;
+      }
+    }
+
+    &-ibutamoren {
+      color: #f4c145 !important;
+
+      &::before {
+        border-color: #f4c145;
+      }
+    }
+
+    &-depression {
+      color: #ace12e !important;
+
+      &::before {
+        border-color: #ace12e;
+      }
+    }
+
+    &-coming-out {
+      color: #ef9234 !important;
+
+      &::before {
+        border-color: #ef9234;
+      }
+    }
+
+    &-substance-use {
+      color: #c9190b !important;
+
+      &::before {
+        border-color: #c9190b;
+      }
+    }
+  }
+}

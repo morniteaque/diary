@@ -66,9 +66,9 @@ import Link from "next/link";
 import { useState } from "react";
 import icon from "../docs/icon-dark.png";
 
-const NAV_ITEMS = [
-  ["Master", "master"],
-  ["Core HRT", "core-hrt"],
+const TOPICS = [
+  ["Everything", "everything"],
+  ["HRT", "hrt"],
   ["FFS", "ffs"],
   ["SRS", "srs"],
   ["Domperidone", "domperidone"],
@@ -104,6 +104,7 @@ export default function Home() {
   const [currentDay, setCurrentDay] = useState(0);
   const [totalDays] = useState(56);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
+  const [activeTopics, setActiveTopics] = useState(["everything"]);
 
   return (
     <Page
@@ -156,13 +157,20 @@ export default function Home() {
           topNav={
             <Nav aria-label="Nav" variant="horizontal">
               <NavList>
-                {NAV_ITEMS.map((el, i) => (
+                {TOPICS.map((el, i) => (
                   <NavItem
                     itemId={i}
                     key={i}
-                    isActive={window?.location.pathname.endsWith("/" + el[1])}
-                    to={"/" + el[1]}
-                    component={Link as unknown as React.ReactNode}
+                    isActive={activeTopics.includes(el[1])}
+                    onClick={() =>
+                      !(el[1] === "everything") &&
+                      setActiveTopics((o) =>
+                        o.includes(el[1])
+                          ? o.filter((j) => j !== el[1])
+                          : [...o, el[1]]
+                      )
+                    }
+                    className={"pf-x-navlink-" + el[1]}
                   >
                     {el[0]}
                   </NavItem>
