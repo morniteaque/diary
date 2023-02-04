@@ -51,7 +51,7 @@ import {
   Tooltip,
 } from "@patternfly/react-core";
 import {
-  CalendarDayIcon,
+  CalendarWeekIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CogIcon,
@@ -101,8 +101,9 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState("");
-  const [currentDay, setCurrentDay] = useState(0);
-  const [totalDays] = useState(56);
+  const [currentWeek, setCurrentWeek] = useState(1);
+  const [startingDate] = useState(new Date("2020-01-13"));
+  const [totalWeeks] = useState(56);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
   const [activeTopics, setActiveTopics] = useState(["everything"]);
 
@@ -466,16 +467,26 @@ export default function Home() {
                       }}
                     >
                       <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md pf-u-display-none pf-u-display-block-on-sm">
-                        <CalendarDayIcon className="pf-u-mr-sm" />{" "}
+                        <CalendarWeekIcon className="pf-u-mr-sm" />{" "}
                         <div className="pf-x-timestamp-wrapper pf-u-display-inline">
                           <Timestamp
                             dateFormat="short"
-                            date={new Date("2023-01-28")}
+                            date={
+                              new Date(
+                                startingDate.getTime() +
+                                  (currentWeek - 1) * 7 * 24 * 60 * 60 * 1000
+                              )
+                            }
                           />
                           {" - "}
                           <Timestamp
                             dateFormat="short"
-                            date={new Date("2023-01-31")}
+                            date={
+                              new Date(
+                                startingDate.getTime() +
+                                  currentWeek * 7 * 24 * 60 * 60 * 1000
+                              )
+                            }
                           />
                         </div>
                       </FlexItem>
@@ -487,11 +498,11 @@ export default function Home() {
                               <Button
                                 variant="plain"
                                 onClick={() =>
-                                  setCurrentDay((d) => {
-                                    const newValue = d - 4;
+                                  setCurrentWeek((d) => {
+                                    const newValue = d - 1;
 
                                     if (
-                                      newValue <= totalDays - 4 &&
+                                      newValue <= totalWeeks - 1 &&
                                       newValue >= 0
                                     ) {
                                       return newValue;
@@ -506,40 +517,34 @@ export default function Home() {
                             </ToolbarItem>
 
                             <ToolbarItem>
-                              <span>Day</span>
+                              <span>Week</span>
                               <TextInput
                                 min="0"
-                                value={currentDay}
+                                value={currentWeek}
                                 type="number"
                                 onChange={(value) => {
                                   const newValue = parseInt(value);
 
-                                  if (
-                                    newValue <= totalDays - 4 &&
-                                    newValue >= 0
-                                  ) {
-                                    setCurrentDay(newValue);
+                                  if (newValue <= totalWeeks && newValue > 0) {
+                                    setCurrentWeek(newValue);
                                   }
                                 }}
                                 aria-label="Current day input"
                                 style={{
                                   width:
-                                    currentDay.toString().length + 4 + "ch",
+                                    currentWeek.toString().length + 4 + "ch",
                                 }}
                                 className="pf-u-mx-sm"
                               />
-                              <span>of {totalDays}</span>
+                              <span>of {totalWeeks}</span>
                             </ToolbarItem>
 
                             <ToolbarItem
                               onClick={() =>
-                                setCurrentDay((d) => {
-                                  const newValue = d + 4;
+                                setCurrentWeek((d) => {
+                                  const newValue = d + 1;
 
-                                  if (
-                                    newValue <= totalDays - 4 &&
-                                    newValue >= 0
-                                  ) {
+                                  if (newValue <= totalWeeks && newValue > 0) {
                                     return newValue;
                                   }
 
