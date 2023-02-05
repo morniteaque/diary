@@ -35,18 +35,6 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
   flex-direction: column;
 }
 
-.pf-c-drawer__body__wrapper--centered {
-  flex: 1;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .pf-l-grid {
-    max-width: 50rem;
-  }
-}
-
 .pf-x-timestamp-wrapper {
   color: var(--pf-global--Color--200);
 }
@@ -150,5 +138,15 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
         border-color: #c9190b;
       }
     }
+  }
+}
+
+.pf-x-c-grid--week {
+  --pf-l-grid__item--GridColumnEnd: span 7 !important;
+  grid-template-columns: repeat(7, [col-start] 1fr) !important;
+  flex: 1;
+
+  &__header {
+    text-align: center;
   }
 }

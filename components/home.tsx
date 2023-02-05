@@ -80,16 +80,20 @@ const TOPICS = [
 
 const ENTRIES = [
   {
-    title: "2023-01-28: Lorem",
+    date: new Date("2023-01-23"),
+    title: "Lorem",
   },
   {
-    title: "2023-01-29: Amet",
+    date: new Date("2023-01-24"),
+    title: "Amet",
   },
   {
-    title: "2023-01-30: Consectur",
+    date: new Date("2023-01-25"),
+    title: "Consectur",
   },
   {
-    title: "2023-01-31: Ducimus",
+    date: new Date("2023-01-26"),
+    title: "Ducimus",
   },
 ];
 
@@ -566,17 +570,15 @@ export default function Home() {
                 </PanelMain>
               </Panel>
 
-              <div className="pf-c-drawer__body__wrapper--centered pf-u-p-md">
-                <Grid
-                  hasGutter
-                  role="region"
-                  aria-label="Selectable card container"
-                >
-                  {ENTRIES.map((entry, key) => (
-                    <GridItem key={key} span={6}>
+              <Grid hasGutter className="pf-x-c-grid--week pf-u-p-md">
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Mon</div>
+
+                  {ENTRIES.filter((e) => e.date.getDay() == 1).map(
+                    (entry, i) => (
                       <Card
+                        key={i}
                         isSelectable
-                        isFullHeight
                         onKeyDown={(e) =>
                           e.key === " " &&
                           setSelectedEntry((e) =>
@@ -598,7 +600,9 @@ export default function Home() {
                         hasSelectableInput
                         selectableInputAriaLabel="Select this card"
                       >
-                        <CardTitle>{entry.title}</CardTitle>
+                        <CardTitle>
+                          {entry.date.toLocaleDateString()}: {entry.title}
+                        </CardTitle>
                         <CardBody>
                           Lorem ipsum dolor sit amet consectetur adipisicing
                           elit. Nemo tenetur unde doloremque quae inventore,
@@ -606,10 +610,28 @@ export default function Home() {
                           quod possimus cum sit …
                         </CardBody>
                       </Card>
-                    </GridItem>
-                  ))}
-                </Grid>
-              </div>
+                    )
+                  )}
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Tue</div>
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Wed</div>
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Thu</div>
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Fri</div>
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Sat</div>
+                </GridItem>
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Sun</div>
+                </GridItem>
+              </Grid>
 
               <Panel>
                 <PanelMain>
