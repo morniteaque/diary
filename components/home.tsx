@@ -82,6 +82,12 @@ const ENTRIES = [
   {
     date: new Date("2023-01-23"),
     title: "Lorem",
+    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
+  },
+  {
+    date: new Date("2023-01-23"),
+    title: "Ipsum",
+    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
   },
   {
     date: new Date("2023-01-24"),
@@ -407,10 +413,7 @@ export default function Home() {
       }
     >
       <PageSection isFilled padding={{ default: "noPadding" }}>
-        <Drawer
-          isExpanded={selectedEntry !== ""}
-          className="pf-m-inline-on-2xl"
-        >
+        <Drawer isExpanded={selectedEntry !== ""}>
           <DrawerContent
             className="pf-m-no-background"
             panelContent={
@@ -429,9 +432,18 @@ export default function Home() {
               >
                 <DrawerHead>
                   <Title headingLevel="h2" size="xl">
-                    {selectedEntry}
+                    {ENTRIES.find((e) => e.title == selectedEntry)?.title}
                   </Title>
+
+                  {ENTRIES.find(
+                    (e) => e.title == selectedEntry
+                  )?.date.toLocaleDateString()}
+
                   <DrawerActions>
+                    <Button variant="plain">
+                      <ChevronLeftIcon />
+                    </Button>
+
                     <Button
                       variant="plain"
                       onClick={() => setDiaryEntryFullscreen((v) => !v)}
@@ -439,6 +451,16 @@ export default function Home() {
                     >
                       {diaryEntryFullscreen ? <CompressIcon /> : <ExpandIcon />}
                     </Button>
+
+                    <Button variant="plain">
+                      <ChevronRightIcon />
+                    </Button>
+
+                    <Divider
+                      orientation={{ default: "vertical" }}
+                      inset={{ default: "insetSm" }}
+                      className="pf-u-mx-sm"
+                    />
 
                     <DrawerCloseButton onClick={() => setSelectedEntry("")} />
                   </DrawerActions>
@@ -570,7 +592,10 @@ export default function Home() {
                 </PanelMain>
               </Panel>
 
-              <Grid hasGutter className="pf-x-c-grid--week pf-u-p-md">
+              <Grid className="pf-x-c-grid--week pf-u-p-md">
+                <GridItem span={1}>
+                  <div className="pf-x-c-grid--week__header">Sat</div>
+                </GridItem>
                 <GridItem span={1}>
                   <div className="pf-x-c-grid--week__header">Mon</div>
 
@@ -579,6 +604,9 @@ export default function Home() {
                       <Card
                         key={i}
                         isSelectable
+                        isFlat
+                        isCompact
+                        isRounded
                         onKeyDown={(e) =>
                           e.key === " " &&
                           setSelectedEntry((e) =>
@@ -599,16 +627,10 @@ export default function Home() {
                         isSelected={selectedEntry === entry.title}
                         hasSelectableInput
                         selectableInputAriaLabel="Select this card"
+                        className="pf-c-card--preview"
                       >
-                        <CardTitle>
-                          {entry.date.toLocaleDateString()}: {entry.title}
-                        </CardTitle>
-                        <CardBody>
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Nemo tenetur unde doloremque quae inventore,
-                          itaque accusantium ducimus modi quaerat, illo ullam
-                          quod possimus cum sit …
-                        </CardBody>
+                        <CardTitle>{entry.title}</CardTitle>
+                        <CardBody>{entry.text}</CardBody>
                       </Card>
                     )
                   )}
@@ -624,9 +646,6 @@ export default function Home() {
                 </GridItem>
                 <GridItem span={1}>
                   <div className="pf-x-c-grid--week__header">Fri</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Sat</div>
                 </GridItem>
                 <GridItem span={1}>
                   <div className="pf-x-c-grid--week__header">Sun</div>

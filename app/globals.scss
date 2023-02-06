@@ -143,10 +143,30 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 
 .pf-x-c-grid--week {
   --pf-l-grid__item--GridColumnEnd: span 7 !important;
+  --pf-l-grid--m-gutter--GridGap: 0.5rem;
+
   grid-template-columns: repeat(7, [col-start] 1fr) !important;
   flex: 1;
 
   &__header {
+    @extend .pf-u-mb-md;
+
     text-align: center;
+  }
+
+  & .pf-l-grid__item {
+    @extend .pf-u-px-sm;
+
+    &:not(:first-child) {
+      border-width: 0 0 0 1px;
+      border-style: dashed;
+      border-color: var(--pf-global--Color--400);
+    }
+  }
+}
+
+.pf-c-card--preview {
+  &:not(:first-child) {
+    @extend .pf-u-mt-sm;
   }
 }
