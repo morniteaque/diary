@@ -92,14 +92,17 @@ const ENTRIES = [
   {
     date: new Date("2023-01-24"),
     title: "Amet",
+    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
   },
   {
     date: new Date("2023-01-25"),
     title: "Consectur",
+    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
   },
   {
     date: new Date("2023-01-26"),
     title: "Ducimus",
+    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
   },
 ];
 
@@ -110,7 +113,7 @@ export default function Home() {
   const [detail, setDetail] = useState(75);
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
-  const [selectedEntry, setSelectedEntry] = useState("");
+  const [selectedEntryIndex, setSelectedEntryIndex] = useState(-1);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [startingDate] = useState(new Date("2020-01-13"));
   const [totalWeeks] = useState(56);
@@ -413,7 +416,7 @@ export default function Home() {
       }
     >
       <PageSection isFilled padding={{ default: "noPadding" }}>
-        <Drawer isExpanded={selectedEntry !== ""}>
+        <Drawer isExpanded={selectedEntryIndex >= 0}>
           <DrawerContent
             className="pf-m-no-background"
             panelContent={
@@ -432,15 +435,18 @@ export default function Home() {
               >
                 <DrawerHead>
                   <Title headingLevel="h2" size="xl">
-                    {ENTRIES.find((e) => e.title == selectedEntry)?.title}
+                    {ENTRIES[selectedEntryIndex]?.title}
                   </Title>
 
-                  {ENTRIES.find(
-                    (e) => e.title == selectedEntry
-                  )?.date.toLocaleDateString()}
+                  {ENTRIES[selectedEntryIndex]?.date.toLocaleDateString()}
 
                   <DrawerActions>
-                    <Button variant="plain">
+                    <Button
+                      variant="plain"
+                      onClick={() =>
+                        setSelectedEntryIndex((e) => (e - 1 < 0 ? e : e - 1))
+                      }
+                    >
                       <ChevronLeftIcon />
                     </Button>
 
@@ -452,7 +458,14 @@ export default function Home() {
                       {diaryEntryFullscreen ? <CompressIcon /> : <ExpandIcon />}
                     </Button>
 
-                    <Button variant="plain">
+                    <Button
+                      variant="plain"
+                      onClick={() =>
+                        setSelectedEntryIndex((e) =>
+                          e + 1 >= ENTRIES.length ? e : e + 1
+                        )
+                      }
+                    >
                       <ChevronRightIcon />
                     </Button>
 
@@ -462,7 +475,9 @@ export default function Home() {
                       className="pf-u-mx-sm"
                     />
 
-                    <DrawerCloseButton onClick={() => setSelectedEntry("")} />
+                    <DrawerCloseButton
+                      onClick={() => setSelectedEntryIndex(-1)}
+                    />
                   </DrawerActions>
                 </DrawerHead>
                 <DrawerPanelBody>
@@ -471,11 +486,7 @@ export default function Home() {
                     direction={{ default: "column" }}
                   >
                     <FlexItem>
-                      <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Fuga eos modi corporis quos sunt nesciunt velit
-                        explicabo esse quod dicta?
-                      </p>
+                      <p>{ENTRIES[selectedEntryIndex]?.text}</p>
                     </FlexItem>
                   </Flex>
                 </DrawerPanelBody>
@@ -593,63 +604,49 @@ export default function Home() {
               </Panel>
 
               <Grid className="pf-x-c-grid--week pf-u-p-md">
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Sat</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Mon</div>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                  (day, i) => (
+                    <GridItem span={1} key={i}>
+                      <div className="pf-x-c-grid--week__header">{day}</div>
 
-                  {ENTRIES.filter((e) => e.date.getDay() == 1).map(
-                    (entry, i) => (
-                      <Card
-                        key={i}
-                        isSelectable
-                        isFlat
-                        isCompact
-                        isRounded
-                        onKeyDown={(e) =>
-                          e.key === " " &&
-                          setSelectedEntry((e) =>
-                            e === entry.title ? "" : entry.title
-                          )
-                        }
-                        onClick={() =>
-                          setSelectedEntry((e) =>
-                            e === entry.title ? "" : entry.title
-                          )
-                        }
-                        onSelectableInputChange={() =>
-                          setSelectedEntry((e) =>
-                            e === entry.title ? "" : entry.title
-                          )
-                        }
-                        isSelectableRaised
-                        isSelected={selectedEntry === entry.title}
-                        hasSelectableInput
-                        selectableInputAriaLabel="Select this card"
-                        className="pf-c-card--preview"
-                      >
-                        <CardTitle>{entry.title}</CardTitle>
-                        <CardBody>{entry.text}</CardBody>
-                      </Card>
-                    )
-                  )}
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Tue</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Wed</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Thu</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Fri</div>
-                </GridItem>
-                <GridItem span={1}>
-                  <div className="pf-x-c-grid--week__header">Sun</div>
-                </GridItem>
+                      {ENTRIES.map((v, id) => ({ id, ...v }))
+                        .filter((e) => e.date.getDay() == i)
+                        .map((entry) => (
+                          <Card
+                            key={entry.id}
+                            isSelectable
+                            isFlat
+                            isCompact
+                            isRounded
+                            onKeyDown={(e) =>
+                              e.key === " " &&
+                              setSelectedEntryIndex((e) =>
+                                e === entry.id ? -1 : entry.id
+                              )
+                            }
+                            onClick={() =>
+                              setSelectedEntryIndex((e) =>
+                                e === entry.id ? -1 : entry.id
+                              )
+                            }
+                            onSelectableInputChange={() =>
+                              setSelectedEntryIndex((e) =>
+                                e === entry.id ? -1 : entry.id
+                              )
+                            }
+                            isSelectableRaised
+                            isSelected={selectedEntryIndex === entry.id}
+                            hasSelectableInput
+                            selectableInputAriaLabel="Select this card"
+                            className="pf-c-card--preview"
+                          >
+                            <CardTitle>{entry.title}</CardTitle>
+                            <CardBody>{entry.text}</CardBody>
+                          </Card>
+                        ))}
+                    </GridItem>
+                  )
+                )}
               </Grid>
 
               <Panel>
