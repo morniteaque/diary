@@ -16,6 +16,8 @@ import {
   DrawerPanelContent,
   Flex,
   FlexItem,
+  FormSelect,
+  FormSelectOption,
   Grid,
   GridItem,
   Nav,
@@ -119,6 +121,7 @@ export default function Home() {
   const [totalWeeks] = useState(56);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
   const [activeTopics, setActiveTopics] = useState(["everything"]);
+  const [scale, setScale] = useState("week");
 
   return (
     <Page
@@ -533,6 +536,26 @@ export default function Home() {
                       <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-x-pagination">
                         <Toolbar className="pf-u-py-0">
                           <ToolbarContent className="pf-u-px-0">
+                            <ToolbarItem>
+                              <FormSelect
+                                value={scale}
+                                onChange={setScale}
+                                aria-label="Scale input"
+                              >
+                                {[
+                                  { value: "week", label: "Week" },
+                                  { value: "month", label: "Month" },
+                                  { value: "quarter", label: "Quarter" },
+                                ].map((el, i) => (
+                                  <FormSelectOption
+                                    key={i}
+                                    value={el.value}
+                                    label={el.label}
+                                  />
+                                ))}
+                              </FormSelect>
+                            </ToolbarItem>
+
                             <ToolbarItem>
                               <Button
                                 variant="plain"
