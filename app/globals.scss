@@ -58,6 +58,15 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
   }
 }
 
+$color--hrt: #6ec664;
+$color--ffs: #009596;
+$color--srs: #a18fff;
+$color--domperidone: #35caed;
+$color--ibutamoren: #f4c145;
+$color--depression: #ace12e;
+$color--coming-out: #ef9234;
+$color--substance-use: #c9190b;
+
 .pf-m-current,
 .pf-c-nav__link:hover {
   &:hover:not(.pf-m-current) {
@@ -67,75 +76,67 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
   }
 
   &.pf-x-navlink {
-    &-everything {
-      color: #2b9af3;
-
-      &::before {
-        border-color: #2b9af3;
-      }
-    }
-
     &-hrt {
-      color: #6ec664 !important;
+      color: $color--hrt !important;
 
       &::before {
-        border-color: #6ec664;
+        border-color: $color--hrt;
       }
     }
 
     &-ffs {
-      color: #009596 !important;
+      color: $color--ffs !important;
 
       &::before {
-        border-color: #009596;
+        border-color: $color--ffs;
       }
     }
 
     &-srs {
-      color: #a18fff !important;
+      color: $color--srs !important;
 
       &::before {
-        border-color: #a18fff;
+        border-color: $color--srs;
       }
     }
 
     &-domperidone {
-      color: #35caed !important;
+      color: $color--domperidone !important;
 
       &::before {
-        border-color: #35caed;
+        border-color: $color--domperidone;
       }
     }
 
     &-ibutamoren {
-      color: #f4c145 !important;
+      color: $color--ibutamoren !important;
 
       &::before {
-        border-color: #f4c145;
+        border-color: $color--ibutamoren;
       }
     }
 
     &-depression {
-      color: #ace12e !important;
+      color: $color--depression !important;
 
       &::before {
-        border-color: #ace12e;
+        border-color: $color--depression;
       }
     }
 
     &-coming-out {
-      color: #ef9234 !important;
+      color: $color--coming-out !important;
 
       &::before {
-        border-color: #ef9234;
+        border-color: $color--coming-out;
       }
     }
 
     &-substance-use {
-      color: #c9190b !important;
+      color: $color--substance-use !important;
 
       &::before {
-        border-color: #c9190b;
+        border-color: $color--substance-use;
       }
     }
   }
@@ -179,5 +180,63 @@ $pf-global--image-path: "~@patternfly/patternfly/assets/images";
 .pf-c-card--preview {
   &:not(:first-child) {
     @extend .pf-u-mt-sm;
+  }
+}
+
+.pf-c-card- {
+  &-hrt {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--hrt} !important;
+    }
+  }
+
+  &-ffs {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--ffs} !important;
+    }
+  }
+
+  &-srs {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--srs} !important;
+    }
+  }
+
+  &-domperidone {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--domperidone} !important;
+    }
+  }
+
+  &-ibutamoren {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--ibutamoren} !important;
+    }
+  }
+
+  &-depression {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--depression} !important;
+    }
+  }
+
+  &-coming-out {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--coming-out} !important;
+    }
+  }
+
+  &-substance-use {
+    &,
+    &:hover {
+      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--substance-use} !important;
+    }
   }
 }

@@ -5,6 +5,8 @@ import {
   Card,
   CardBody,
   CardTitle,
+  Chip,
+  ChipGroup,
   Divider,
   Drawer,
   DrawerActions,
@@ -69,7 +71,6 @@ import { useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const TOPICS = [
-  ["Everything", "everything"],
   ["HRT", "hrt"],
   ["FFS", "ffs"],
   ["SRS", "srs"],
@@ -85,26 +86,31 @@ const ENTRIES = [
     date: new Date("2023-01-23"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
+    topics: ["hrt"],
   },
   {
     date: new Date("2023-01-23"),
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
+    topics: ["ffs"],
   },
   {
     date: new Date("2023-01-24"),
     title: "Amet",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
+    topics: ["ffs", "domperidone"],
   },
   {
     date: new Date("2023-01-25"),
     title: "Consectur",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
+    topics: ["coming-out"],
   },
   {
     date: new Date("2023-01-26"),
     title: "Ducimus",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
+    topics: ["substance-use", "ibutamoren"],
   },
 ];
 
@@ -120,7 +126,16 @@ export default function Home() {
   const [startingDate] = useState(new Date("2020-01-13"));
   const [totalWeeks] = useState(56);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
-  const [activeTopics, setActiveTopics] = useState(["everything"]);
+  const [activeTopics, setActiveTopics] = useState([
+    "hrt",
+    "ffs",
+    "srs",
+    "domperidone",
+    "ibutamoren",
+    "depression",
+    "coming-out",
+    "substance-use",
+  ]);
   const [scale, setScale] = useState("week");
 
   return (
@@ -181,13 +196,11 @@ export default function Home() {
                     key={i}
                     isActive={activeTopics.includes(el[1])}
                     onClick={() =>
-                      el[1] === "everything"
-                        ? setActiveTopics(["everything"])
-                        : setActiveTopics((o) =>
-                            o.includes(el[1])
-                              ? o.filter((j) => j !== el[1])
-                              : [...o, el[1]]
-                          )
+                      setActiveTopics((o) =>
+                        o.includes(el[1])
+                          ? o.filter((j) => j !== el[1])
+                          : [...o, el[1]]
+                      )
                     }
                     className={"pf-x-navlink-" + el[1]}
                   >
@@ -441,7 +454,17 @@ export default function Home() {
                     {ENTRIES[selectedEntryIndex]?.title}
                   </Title>
 
-                  {ENTRIES[selectedEntryIndex]?.date.toLocaleDateString()}
+                  <div className="pf-u-mt-sm">
+                    {ENTRIES[selectedEntryIndex]?.date.toLocaleDateString()}
+                  </div>
+
+                  <ChipGroup>
+                    {ENTRIES[selectedEntryIndex]?.topics.map((t, i) => (
+                      <Chip isReadOnly key={i} className="pf-u-mt-sm">
+                        {t}
+                      </Chip>
+                    ))}
+                  </ChipGroup>
 
                   <DrawerActions>
                     <Button
@@ -633,7 +656,12 @@ export default function Home() {
                       <div className="pf-x-c-grid--week__header">{day}</div>
 
                       {ENTRIES.map((v, id) => ({ id, ...v }))
-                        .filter((e) => e.date.getDay() == i)
+                        .filter(
+                          (e) =>
+                            e.date.getDay() == i &&
+                            activeTopics.filter((v) => e.topics.includes(v))
+                              .length > 0
+                        )
                         .map((entry) => (
                           <Card
                             key={entry.id}
@@ -661,7 +689,13 @@ export default function Home() {
                             isSelected={selectedEntryIndex === entry.id}
                             hasSelectableInput
                             selectableInputAriaLabel="Select this card"
-                            className="pf-c-card--preview"
+                            className={
+                              "pf-c-card--preview " +
+                              entry.topics.reduce(
+                                (prev, curr) => `${prev} pf-c-card--${curr}`,
+                                ""
+                              )
+                            }
                           >
                             <CardTitle>{entry.title}</CardTitle>
                             <CardBody>{entry.text}</CardBody>
