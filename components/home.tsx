@@ -51,6 +51,7 @@ import {
   ToggleGroupItem,
   Toolbar,
   ToolbarContent,
+  ToolbarGroup,
   ToolbarItem,
   Tooltip,
 } from "@patternfly/react-core";
@@ -579,68 +580,76 @@ export default function Home() {
                               </FormSelect>
                             </ToolbarItem>
 
-                            <ToolbarItem>
-                              <Button
-                                variant="plain"
-                                onClick={() =>
-                                  setCurrentWeek((d) => {
-                                    const newValue = d - 1;
+                            <ToolbarGroup>
+                              <ToolbarItem className="pf-u-mx-0">
+                                <Button
+                                  variant="plain"
+                                  onClick={() =>
+                                    setCurrentWeek((d) => {
+                                      const newValue = d - 1;
+
+                                      if (
+                                        newValue <= totalWeeks - 1 &&
+                                        newValue > 0
+                                      ) {
+                                        return newValue;
+                                      }
+
+                                      return d;
+                                    })
+                                  }
+                                >
+                                  <ChevronLeftIcon />
+                                </Button>
+                              </ToolbarItem>
+
+                              <ToolbarItem className="pf-u-mx-0">
+                                <TextInput
+                                  min="0"
+                                  value={currentWeek}
+                                  type="number"
+                                  onChange={(value) => {
+                                    const newValue = parseInt(value);
 
                                     if (
-                                      newValue <= totalWeeks - 1 &&
+                                      newValue <= totalWeeks &&
                                       newValue > 0
                                     ) {
-                                      return newValue;
+                                      setCurrentWeek(newValue);
                                     }
+                                  }}
+                                  aria-label="Current day input"
+                                  style={{
+                                    width:
+                                      currentWeek.toString().length + 4 + "ch",
+                                  }}
+                                  className="pf-u-mx-sm"
+                                />
+                                <span>of {totalWeeks}</span>
+                              </ToolbarItem>
 
-                                    return d;
-                                  })
-                                }
-                              >
-                                <ChevronLeftIcon />
-                              </Button>
-                            </ToolbarItem>
+                              <ToolbarItem className="pf-u-mx-0">
+                                <Button
+                                  variant="plain"
+                                  onClick={() =>
+                                    setCurrentWeek((d) => {
+                                      const newValue = d + 1;
 
-                            <ToolbarItem>
-                              <span>Week</span>
-                              <TextInput
-                                min="0"
-                                value={currentWeek}
-                                type="number"
-                                onChange={(value) => {
-                                  const newValue = parseInt(value);
+                                      if (
+                                        newValue <= totalWeeks &&
+                                        newValue > 0
+                                      ) {
+                                        return newValue;
+                                      }
 
-                                  if (newValue <= totalWeeks && newValue > 0) {
-                                    setCurrentWeek(newValue);
+                                      return d;
+                                    })
                                   }
-                                }}
-                                aria-label="Current day input"
-                                style={{
-                                  width:
-                                    currentWeek.toString().length + 4 + "ch",
-                                }}
-                                className="pf-u-mx-sm"
-                              />
-                              <span>of {totalWeeks}</span>
-                            </ToolbarItem>
-
-                            <ToolbarItem
-                              onClick={() =>
-                                setCurrentWeek((d) => {
-                                  const newValue = d + 1;
-
-                                  if (newValue <= totalWeeks && newValue > 0) {
-                                    return newValue;
-                                  }
-
-                                  return d;
-                                })
-                              }
-                            >
-                              <Button variant="plain">
-                                <ChevronRightIcon />
-                              </Button>
-                            </ToolbarItem>
+                                >
+                                  <ChevronRightIcon />
+                                </Button>
+                              </ToolbarItem>
+                            </ToolbarGroup>
                           </ToolbarContent>
                         </Toolbar>
                       </FlexItem>
@@ -649,62 +658,64 @@ export default function Home() {
                 </PanelMain>
               </Panel>
 
-              <Grid className="pf-x-c-grid--week pf-u-p-md">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                  (day, i) => (
-                    <GridItem span={1} key={i}>
-                      <div className="pf-x-c-grid--week__header">{day}</div>
+              {scale === "week" && (
+                <Grid className="pf-x-c-grid--week pf-u-p-md">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                    (day, i) => (
+                      <GridItem span={1} key={i}>
+                        <div className="pf-x-c-grid--week__header">{day}</div>
 
-                      {ENTRIES.map((v, id) => ({ id, ...v }))
-                        .filter(
-                          (e) =>
-                            e.date.getDay() == i &&
-                            activeTopics.filter((v) => e.topics.includes(v))
-                              .length > 0
-                        )
-                        .map((entry) => (
-                          <Card
-                            key={entry.id}
-                            isSelectable
-                            isFlat
-                            isCompact
-                            isRounded
-                            onKeyDown={(e) =>
-                              e.key === " " &&
-                              setSelectedEntryIndex((e) =>
-                                e === entry.id ? -1 : entry.id
-                              )
-                            }
-                            onClick={() =>
-                              setSelectedEntryIndex((e) =>
-                                e === entry.id ? -1 : entry.id
-                              )
-                            }
-                            onSelectableInputChange={() =>
-                              setSelectedEntryIndex((e) =>
-                                e === entry.id ? -1 : entry.id
-                              )
-                            }
-                            isSelectableRaised
-                            isSelected={selectedEntryIndex === entry.id}
-                            hasSelectableInput
-                            selectableInputAriaLabel="Select this card"
-                            className={
-                              "pf-c-card--preview " +
-                              entry.topics.reduce(
-                                (prev, curr) => `${prev} pf-c-card--${curr}`,
-                                ""
-                              )
-                            }
-                          >
-                            <CardTitle>{entry.title}</CardTitle>
-                            <CardBody>{entry.text}</CardBody>
-                          </Card>
-                        ))}
-                    </GridItem>
-                  )
-                )}
-              </Grid>
+                        {ENTRIES.map((v, id) => ({ id, ...v }))
+                          .filter(
+                            (e) =>
+                              e.date.getDay() == i &&
+                              activeTopics.filter((v) => e.topics.includes(v))
+                                .length > 0
+                          )
+                          .map((entry) => (
+                            <Card
+                              key={entry.id}
+                              isSelectable
+                              isFlat
+                              isCompact
+                              isRounded
+                              onKeyDown={(e) =>
+                                e.key === " " &&
+                                setSelectedEntryIndex((e) =>
+                                  e === entry.id ? -1 : entry.id
+                                )
+                              }
+                              onClick={() =>
+                                setSelectedEntryIndex((e) =>
+                                  e === entry.id ? -1 : entry.id
+                                )
+                              }
+                              onSelectableInputChange={() =>
+                                setSelectedEntryIndex((e) =>
+                                  e === entry.id ? -1 : entry.id
+                                )
+                              }
+                              isSelectableRaised
+                              isSelected={selectedEntryIndex === entry.id}
+                              hasSelectableInput
+                              selectableInputAriaLabel="Select this card"
+                              className={
+                                "pf-c-card--preview " +
+                                entry.topics.reduce(
+                                  (prev, curr) => `${prev} pf-c-card--${curr}`,
+                                  ""
+                                )
+                              }
+                            >
+                              <CardTitle>{entry.title}</CardTitle>
+                              <CardBody>{entry.text}</CardBody>
+                            </Card>
+                          ))}
+                      </GridItem>
+                    )
+                  )}
+                </Grid>
+              )}
 
               <Panel>
                 <PanelMain>
