@@ -4,6 +4,7 @@ import {
   ButtonVariant,
   Card,
   CardBody,
+  CardFooter,
   CardTitle,
   Chip,
   ChipGroup,
@@ -68,7 +69,7 @@ import {
   StampIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const TOPICS = [
@@ -82,18 +83,37 @@ const TOPICS = [
   ["Substance Use", "substance-use"],
 ];
 
-const ENTRIES = [
+interface IEntry {
+  date: Date;
+  title: string;
+  text: string;
+  topics: string[];
+}
+
+const ENTRIES: IEntry[] = [
   {
-    date: new Date("2023-01-23"),
+    date: new Date("2023-01-03 10:30"),
+    title: "Dolor",
+    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
+    topics: ["substance-use"],
+  },
+  {
+    date: new Date("2023-01-20 11:30"),
+    title: "Lorem",
+    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
+    topics: ["coming-out"],
+  },
+  {
+    date: new Date("2023-01-23 09:30"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
   },
   {
-    date: new Date("2023-01-23"),
+    date: new Date("2023-01-23 16:30"),
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["ffs"],
+    topics: ["ffs", "hrt"],
   },
   {
     date: new Date("2023-01-24"),
@@ -114,6 +134,80 @@ const ENTRIES = [
     topics: ["substance-use", "ibutamoren"],
   },
 ];
+
+const TopicsChips: React.FC<{ topics: string[]; className?: string }> = ({
+  topics,
+  ...otherProps
+}) => (
+  <ChipGroup {...otherProps}>
+    {topics?.map((t, i) => (
+      <Chip isReadOnly key={i} className={"pf-x-c-chip pf-x-c-chip--" + t}>
+        {t}
+      </Chip>
+    ))}
+  </ChipGroup>
+);
+
+interface IEntryCardProps {
+  entry: IEntry;
+  onClick: () => void;
+  selected: boolean;
+  showDate?: boolean;
+}
+
+const EntryCard: React.FC<IEntryCardProps> = ({
+  entry,
+  onClick,
+  selected,
+  showDate,
+  ...otherProps
+}) => (
+  <Card
+    isSelectable
+    isFlat
+    isCompact
+    isRounded
+    onKeyDown={(e) => e.key === " " && onClick()}
+    onClick={onClick}
+    onSelectableInputChange={onClick}
+    isSelectableRaised
+    isSelected={selected}
+    hasSelectableInput
+    selectableInputAriaLabel="Select this card"
+    className={
+      "pf-c-card--preview pf-u-color-300 " +
+      entry.topics.reduce((prev, curr) => `${prev} pf-c-card--${curr}`, "")
+    }
+    {...otherProps}
+  >
+    <CardTitle>{entry.title}</CardTitle>
+    <CardBody>{entry.text}</CardBody>
+    <CardFooter>
+      <Flex
+        justifyContent={{
+          default: "justifyContentSpaceBetween",
+        }}
+        alignItems={{
+          default: "alignItemsCenter",
+        }}
+      >
+        {showDate && (
+          <FlexItem>
+            {entry.date.toLocaleTimeString("default", {
+              weekday: "long",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </FlexItem>
+        )}
+
+        <FlexItem>
+          <TopicsChips topics={entry.topics} />
+        </FlexItem>
+      </Flex>
+    </CardFooter>
+  </Card>
+);
 
 export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -456,16 +550,23 @@ export default function Home() {
                   </Title>
 
                   <div className="pf-u-mt-sm">
-                    {ENTRIES[selectedEntryIndex]?.date.toLocaleDateString()}
+                    {ENTRIES[selectedEntryIndex]?.date.toLocaleString(
+                      "default",
+                      {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        weekday: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
                   </div>
 
-                  <ChipGroup>
-                    {ENTRIES[selectedEntryIndex]?.topics.map((t, i) => (
-                      <Chip isReadOnly key={i} className="pf-u-mt-sm">
-                        {t}
-                      </Chip>
-                    ))}
-                  </ChipGroup>
+                  <TopicsChips
+                    className="pf-u-mt-sm"
+                    topics={ENTRIES[selectedEntryIndex]?.topics}
+                  />
 
                   <DrawerActions>
                     <Button
@@ -569,7 +670,7 @@ export default function Home() {
                                 {[
                                   { value: "week", label: "Week" },
                                   { value: "month", label: "Month" },
-                                  { value: "quarter", label: "Quarter" },
+                                  { value: "list", label: "List" },
                                 ].map((el, i) => (
                                   <FormSelectOption
                                     key={i}
@@ -659,11 +760,11 @@ export default function Home() {
               </Panel>
 
               {scale === "week" && (
-                <Grid className="pf-x-c-grid--week pf-u-p-md">
+                <Grid className="pf-x-c-grid pf-x-c-grid--week pf-u-p-md">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                     (day, i) => (
                       <GridItem span={1} key={i}>
-                        <div className="pf-x-c-grid--week__header">{day}</div>
+                        <div className="pf-x-c-grid__header">{day}</div>
 
                         {ENTRIES.map((v, id) => ({ id, ...v }))
                           .filter(
@@ -673,47 +774,60 @@ export default function Home() {
                                 .length > 0
                           )
                           .map((entry) => (
-                            <Card
+                            <EntryCard
                               key={entry.id}
-                              isSelectable
-                              isFlat
-                              isCompact
-                              isRounded
-                              onKeyDown={(e) =>
-                                e.key === " " &&
-                                setSelectedEntryIndex((e) =>
-                                  e === entry.id ? -1 : entry.id
-                                )
-                              }
+                              entry={entry}
+                              selected={selectedEntryIndex === entry.id}
                               onClick={() =>
                                 setSelectedEntryIndex((e) =>
                                   e === entry.id ? -1 : entry.id
                                 )
                               }
-                              onSelectableInputChange={() =>
-                                setSelectedEntryIndex((e) =>
-                                  e === entry.id ? -1 : entry.id
-                                )
-                              }
-                              isSelectableRaised
-                              isSelected={selectedEntryIndex === entry.id}
-                              hasSelectableInput
-                              selectableInputAriaLabel="Select this card"
-                              className={
-                                "pf-c-card--preview " +
-                                entry.topics.reduce(
-                                  (prev, curr) => `${prev} pf-c-card--${curr}`,
-                                  ""
-                                )
-                              }
-                            >
-                              <CardTitle>{entry.title}</CardTitle>
-                              <CardBody>{entry.text}</CardBody>
-                            </Card>
+                            />
                           ))}
                       </GridItem>
                     )
                   )}
+                </Grid>
+              )}
+
+              {scale === "month" && (
+                <Grid className="pf-x-c-grid pf-x-c-grid--month pf-u-p-md">
+                  {["Week 1", "Week 2", "Week 3", "Week 4"].map((week, i) => (
+                    <GridItem span={1} key={i}>
+                      <div className="pf-x-c-grid__header">{week}</div>
+
+                      {ENTRIES.map((v, id) => ({ id, ...v }))
+                        .filter(
+                          (e) =>
+                            Math.ceil(
+                              (e.date.getDate() +
+                                new Date(
+                                  e.date.getFullYear(),
+                                  e.date.getMonth(),
+                                  1
+                                ).getDay()) /
+                                7
+                            ) ==
+                              i + 1 &&
+                            activeTopics.filter((v) => e.topics.includes(v))
+                              .length > 0
+                        )
+                        .map((entry) => (
+                          <EntryCard
+                            key={entry.id}
+                            entry={entry}
+                            selected={selectedEntryIndex === entry.id}
+                            onClick={() =>
+                              setSelectedEntryIndex((e) =>
+                                e === entry.id ? -1 : entry.id
+                              )
+                            }
+                            showDate
+                          />
+                        ))}
+                    </GridItem>
+                  ))}
                 </Grid>
               )}
 

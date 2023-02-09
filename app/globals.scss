@@ -142,16 +142,30 @@ $color--substance-use: #c9190b;
   }
 }
 
-.pf-x-c-grid--week {
+.pf-x-c-grid {
   --pf-l-grid--m-gutter--GridGap: 0.5rem;
   flex: 1;
 
   --pf-l-grid__item--GridColumnEnd: span 1 !important;
   grid-template-columns: repeat(1, [col-start] 1fr) !important;
 
+  &__header {
+    margin-top: var(--pf-global--spacer--md) !important;
+    margin-bottom: var(--pf-global--spacer--md) !important;
+
+    text-align: center;
+  }
+
   @media screen and (min-width: $pf-global--breakpoint--lg) {
-    --pf-l-grid__item--GridColumnEnd: span 7 !important;
-    grid-template-columns: repeat(7, [col-start] 1fr) !important;
+    &--week {
+      --pf-l-grid__item--GridColumnEnd: span 7 !important;
+      grid-template-columns: repeat(7, [col-start] 1fr) !important;
+    }
+
+    &--month {
+      --pf-l-grid__item--GridColumnEnd: span 4 !important;
+      grid-template-columns: repeat(4, [col-start] 1fr) !important;
+    }
 
     & .pf-l-grid__item {
       padding-left: var(--pf-global--spacer--sm) !important;
@@ -165,15 +179,8 @@ $color--substance-use: #c9190b;
     }
 
     &__header {
-      margin-bottom: 0 !important;
+      margin-top: var(--pf-global--spacer--sm) !important;
     }
-  }
-
-  &__header {
-    margin-top: var(--pf-global--spacer--md) !important;
-    margin-bottom: var(--pf-global--spacer--md) !important;
-
-    text-align: center;
   }
 }
 
@@ -183,60 +190,40 @@ $color--substance-use: #c9190b;
   }
 }
 
-.pf-c-card- {
-  &-hrt {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--hrt} !important;
-    }
+.pf-x-c-chip {
+  &::before {
+    border-bottom-width: 3px !important;
   }
 
-  &-ffs {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--ffs} !important;
-    }
+  &--hrt::before {
+    border-color: #{$color--hrt} !important;
   }
 
-  &-srs {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--srs} !important;
-    }
+  &--ffs::before {
+    border-color: #{$color--ffs} !important;
   }
 
-  &-domperidone {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--domperidone} !important;
-    }
+  &--srs::before {
+    border-color: #{$color--srs} !important;
   }
 
-  &-ibutamoren {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--ibutamoren} !important;
-    }
+  &--domperidone::before {
+    border-color: #{$color--domperidone} !important;
   }
 
-  &-depression {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--depression} !important;
-    }
+  &--ibutamoren::before {
+    border-color: #{$color--ibutamoren} !important;
   }
 
-  &-coming-out {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--coming-out} !important;
-    }
+  &--depression::before {
+    border-color: #{$color--depression} !important;
   }
 
-  &-substance-use {
-    &,
-    &:hover {
-      --pf-c-card--m-selectable-raised--before--BackgroundColor: #{$color--substance-use} !important;
-    }
+  &--coming-out::before {
+    border-color: #{$color--coming-out} !important;
+  }
+
+  &--substance-use::before {
+    border-color: #{$color--substance-use} !important;
   }
 }
