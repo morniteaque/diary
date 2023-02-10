@@ -193,15 +193,7 @@ const EntryCard: React.FC<IEntryCardProps> = ({
     }
     {...otherProps}
   >
-    <CardTitle>
-      {entry.title}
-      {showDay && (
-        <>
-          {" "}
-          · <span className="pf-u-color-300">Day {entry.day}</span>
-        </>
-      )}
-    </CardTitle>
+    <CardTitle>{entry.title}</CardTitle>
     <CardBody>{entry.text}</CardBody>
     <CardFooter>
       <Flex
@@ -212,15 +204,25 @@ const EntryCard: React.FC<IEntryCardProps> = ({
           default: "alignItemsCenter",
         }}
       >
-        {showDate && (
-          <FlexItem>
-            {entry.date.toLocaleTimeString("default", {
-              weekday: "long",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </FlexItem>
-        )}
+        <FlexItem>
+          {showDate
+            ? entry.date.toLocaleTimeString("default", {
+                weekday: "long",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : entry.date.toLocaleTimeString("default", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+
+          {showDay && (
+            <>
+              {" "}
+              · <span>Day {entry.day}</span>
+            </>
+          )}
+        </FlexItem>
 
         <FlexItem>
           <TopicsChips topics={entry.topics} />
