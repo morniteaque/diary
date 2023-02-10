@@ -69,7 +69,7 @@ import {
   StampIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const TOPICS = [
@@ -84,6 +84,7 @@ const TOPICS = [
 ];
 
 interface IEntry {
+  day: number;
   date: Date;
   title: string;
   text: string;
@@ -92,42 +93,49 @@ interface IEntry {
 
 const ENTRIES: IEntry[] = [
   {
+    day: 0,
     date: new Date("2023-01-03 10:30"),
     title: "Dolor",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["substance-use"],
   },
   {
+    day: 1,
     date: new Date("2023-01-20 11:30"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["coming-out"],
   },
   {
+    day: 3,
     date: new Date("2023-01-23 09:30"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
   },
   {
+    day: 4,
     date: new Date("2023-01-23 16:30"),
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "hrt"],
   },
   {
+    day: 5,
     date: new Date("2023-01-24"),
     title: "Amet",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "domperidone"],
   },
   {
+    day: 6,
     date: new Date("2023-01-25"),
     title: "Consectur",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["coming-out"],
   },
   {
+    day: 7,
     date: new Date("2023-01-26"),
     title: "Ducimus",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
@@ -149,17 +157,21 @@ const TopicsChips: React.FC<{ topics: string[]; className?: string }> = ({
 );
 
 interface IEntryCardProps {
+  id: string;
   entry: IEntry;
   onClick: () => void;
   selected: boolean;
   showDate?: boolean;
+  showDay?: boolean;
 }
 
 const EntryCard: React.FC<IEntryCardProps> = ({
+  id,
   entry,
   onClick,
   selected,
   showDate,
+  showDay,
   ...otherProps
 }) => (
   <Card
@@ -173,14 +185,23 @@ const EntryCard: React.FC<IEntryCardProps> = ({
     isSelectableRaised
     isSelected={selected}
     hasSelectableInput
-    selectableInputAriaLabel="Select this card"
+    id={id}
+    selectableInputAriaLabel={`Select card with title ${entry.title}`}
     className={
       "pf-c-card--preview pf-u-color-300 " +
       entry.topics.reduce((prev, curr) => `${prev} pf-c-card--${curr}`, "")
     }
     {...otherProps}
   >
-    <CardTitle>{entry.title}</CardTitle>
+    <CardTitle>
+      {entry.title}
+      {showDay && (
+        <>
+          {" "}
+          · <span className="pf-u-color-300">Day {entry.day}</span>
+        </>
+      )}
+    </CardTitle>
     <CardBody>{entry.text}</CardBody>
     <CardFooter>
       <Flex
@@ -238,6 +259,10 @@ export default function Home() {
       header={
         <PageHeader
           logo={<Brand src={icon.src} alt="Diary logo" />}
+          logoComponent={Link as unknown as ReactNode}
+          logoProps={{
+            href: "/",
+          }}
           headerTools={
             <PageHeaderTools>
               <PageHeaderToolsGroup>
@@ -574,6 +599,7 @@ export default function Home() {
                       onClick={() =>
                         setSelectedEntryIndex((e) => (e - 1 < 0 ? e : e - 1))
                       }
+                      aria-label="Go one page pack"
                     >
                       <ChevronLeftIcon />
                     </Button>
@@ -593,6 +619,7 @@ export default function Home() {
                           e + 1 >= ENTRIES.length ? e : e + 1
                         )
                       }
+                      aria-label="Go one page forward"
                     >
                       <ChevronRightIcon />
                     </Button>
@@ -699,6 +726,7 @@ export default function Home() {
                                       return d;
                                     })
                                   }
+                                  aria-label="Go one page pack"
                                 >
                                   <ChevronLeftIcon />
                                 </Button>
@@ -746,6 +774,7 @@ export default function Home() {
                                       return d;
                                     })
                                   }
+                                  aria-label="Go one page forward"
                                 >
                                   <ChevronRightIcon />
                                 </Button>
@@ -764,7 +793,12 @@ export default function Home() {
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                     (day, i) => (
                       <GridItem span={1} key={i}>
-                        <div className="pf-x-c-grid__header">{day}</div>
+                        <div className="pf-x-c-grid__header">
+                          {day} ·{" "}
+                          <span className="pf-u-color-300">
+                            Day {ENTRIES.find((e) => e.date.getDay() == i)?.day}
+                          </span>
+                        </div>
 
                         {ENTRIES.map((v, id) => ({ id, ...v }))
                           .filter(
@@ -775,6 +809,7 @@ export default function Home() {
                           )
                           .map((entry) => (
                             <EntryCard
+                              id={entry.id.toString()}
                               key={entry.id}
                               entry={entry}
                               selected={selectedEntryIndex === entry.id}
@@ -815,6 +850,7 @@ export default function Home() {
                         )
                         .map((entry) => (
                           <EntryCard
+                            id={entry.id.toString()}
                             key={entry.id}
                             entry={entry}
                             selected={selectedEntryIndex === entry.id}
@@ -824,6 +860,7 @@ export default function Home() {
                               )
                             }
                             showDate
+                            showDay
                           />
                         ))}
                     </GridItem>
