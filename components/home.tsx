@@ -258,6 +258,7 @@ export default function Home() {
 
   return (
     <Page
+      className="pf-c-page--background"
       header={
         <PageHeader
           logo={<Brand src={icon.src} alt="Diary logo" />}
