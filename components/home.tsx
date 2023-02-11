@@ -699,7 +699,7 @@ export default function Home() {
                                 {[
                                   { value: "week", label: "Week" },
                                   { value: "month", label: "Month" },
-                                  { value: "list", label: "List" },
+                                  { value: "page", label: "Page" },
                                 ].map((el, i) => (
                                   <FormSelectOption
                                     key={i}
@@ -868,6 +868,36 @@ export default function Home() {
                     </GridItem>
                   ))}
                 </Grid>
+              )}
+
+              {scale === "page" && (
+                <div className="pf-x-c-page">
+                  <Grid className="pf-x-c-grid pf-u-p-md" hasGutter>
+                    {ENTRIES.map((v, id) => ({ id, ...v }))
+                      .filter(
+                        (e) =>
+                          activeTopics.filter((v) => e.topics.includes(v))
+                            .length > 0
+                      )
+                      .slice(0, 4)
+                      .map((entry) => (
+                        <GridItem span={6} key={entry.id}>
+                          <EntryCard
+                            id={entry.id.toString()}
+                            entry={entry}
+                            selected={selectedEntryIndex === entry.id}
+                            onClick={() =>
+                              setSelectedEntryIndex((e) =>
+                                e === entry.id ? -1 : entry.id
+                              )
+                            }
+                            showDate
+                            showDay
+                          />
+                        </GridItem>
+                      ))}
+                  </Grid>
+                </div>
               )}
 
               <Panel>

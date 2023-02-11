@@ -144,10 +144,14 @@ $color--substance-use: #ff7e74;
 
 .pf-x-c-grid {
   --pf-l-grid--m-gutter--GridGap: 0.5rem;
-  flex: 1;
 
-  --pf-l-grid__item--GridColumnEnd: span 1 !important;
-  grid-template-columns: repeat(1, [col-start] 1fr) !important;
+  &--week,
+  &--month {
+    --pf-l-grid__item--GridColumnEnd: span 1 !important;
+    grid-template-columns: repeat(1, [col-start] 1fr) !important;
+
+    flex: 1;
+  }
 
   &__header {
     margin-top: var(--pf-global--spacer--md) !important;
@@ -167,14 +171,17 @@ $color--substance-use: #ff7e74;
       grid-template-columns: repeat(4, [col-start] 1fr) !important;
     }
 
-    & .pf-l-grid__item {
-      padding-left: var(--pf-global--spacer--sm) !important;
-      padding-right: var(--pf-global--spacer--sm) !important;
+    &--week,
+    &--month {
+      & .pf-l-grid__item {
+        padding-left: var(--pf-global--spacer--sm) !important;
+        padding-right: var(--pf-global--spacer--sm) !important;
 
-      &:not(:first-child) {
-        border-width: 0 0 0 1px;
-        border-style: dashed;
-        border-color: var(--pf-global--Color--400);
+        &:not(:first-child) {
+          border-width: 0 0 0 1px;
+          border-style: dashed;
+          border-color: var(--pf-global--Color--400);
+        }
       }
     }
 
@@ -182,6 +189,13 @@ $color--substance-use: #ff7e74;
       margin-top: var(--pf-global--spacer--sm) !important;
     }
   }
+}
+
+.pf-x-c-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pf-c-card--preview {
