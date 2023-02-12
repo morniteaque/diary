@@ -246,10 +246,9 @@ export default function Home() {
   const [detail, setDetail] = useState(75);
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
-  const [selectedEntryIndex, setSelectedEntryIndex] = useState(-1);
-  const [currentWeek, setCurrentWeek] = useState(1);
+  const [selectedEntryID, setSelectedEntryID] = useState(-1);
+  const [currentPagination, setCurrentPagination] = useState(1);
   const [startingDate] = useState(new Date("2020-01-13"));
-  const [totalWeeks] = useState(56);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
   const [activeTopics, setActiveTopics] = useState([
     "hrt",
@@ -275,6 +274,30 @@ export default function Home() {
     },
     { earliestEntryDate: new Date(), latestEntryDate: new Date() }
   );
+
+  let maxPagination = 0;
+  switch (scale) {
+    case "week":
+      maxPagination = Math.round(
+        Math.ceil(
+          Math.abs(latestEntryDate.getTime() - earliestEntryDate.getTime()) /
+            (1000 * 60 * 60 * 24 * 7)
+        )
+      );
+
+      break;
+    case "month":
+      maxPagination =
+        latestEntryDate.getMonth() -
+        earliestEntryDate.getMonth() +
+        12 * (latestEntryDate.getFullYear() - earliestEntryDate.getFullYear());
+
+      break;
+    case "page":
+      maxPagination = Math.ceil(ENTRIES.length / 4);
+
+      break;
+  }
 
   return (
     <Page
@@ -575,7 +598,7 @@ export default function Home() {
       }
     >
       <PageSection isFilled padding={{ default: "noPadding" }}>
-        <Drawer isExpanded={selectedEntryIndex >= 0}>
+        <Drawer isExpanded={selectedEntryID >= 0}>
           <DrawerContent
             className="pf-m-no-background"
             panelContent={
@@ -594,33 +617,30 @@ export default function Home() {
               >
                 <DrawerHead>
                   <Title headingLevel="h2" size="xl">
-                    {ENTRIES[selectedEntryIndex]?.title}
+                    {ENTRIES[selectedEntryID]?.title}
                   </Title>
 
                   <div className="pf-u-mt-sm">
-                    {ENTRIES[selectedEntryIndex]?.date.toLocaleString(
-                      "default",
-                      {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                        weekday: "long",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
+                    {ENTRIES[selectedEntryID]?.date.toLocaleString("default", {
+                      year: "numeric",
+                      month: "numeric",
+                      day: "numeric",
+                      weekday: "long",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
 
                   <TopicsChips
                     className="pf-u-mt-sm"
-                    topics={ENTRIES[selectedEntryIndex]?.topics}
+                    topics={ENTRIES[selectedEntryID]?.topics}
                   />
 
                   <DrawerActions>
                     <Button
                       variant="plain"
                       onClick={() =>
-                        setSelectedEntryIndex((e) => (e - 1 < 0 ? e : e - 1))
+                        setSelectedEntryID((e) => (e - 1 < 0 ? e : e - 1))
                       }
                       aria-label="Go one page pack"
                     >
@@ -638,7 +658,7 @@ export default function Home() {
                     <Button
                       variant="plain"
                       onClick={() =>
-                        setSelectedEntryIndex((e) =>
+                        setSelectedEntryID((e) =>
                           e + 1 >= ENTRIES.length ? e : e + 1
                         )
                       }
@@ -653,9 +673,7 @@ export default function Home() {
                       className="pf-u-mx-sm"
                     />
 
-                    <DrawerCloseButton
-                      onClick={() => setSelectedEntryIndex(-1)}
-                    />
+                    <DrawerCloseButton onClick={() => setSelectedEntryID(-1)} />
                   </DrawerActions>
                 </DrawerHead>
                 <DrawerPanelBody>
@@ -664,7 +682,7 @@ export default function Home() {
                     direction={{ default: "column" }}
                   >
                     <FlexItem>
-                      <p>{ENTRIES[selectedEntryIndex]?.text}</p>
+                      <p>{ENTRIES[selectedEntryID]?.text}</p>
                     </FlexItem>
                   </Flex>
                 </DrawerPanelBody>
@@ -691,7 +709,12 @@ export default function Home() {
                             date={
                               new Date(
                                 startingDate.getTime() +
-                                  (currentWeek - 1) * 7 * 24 * 60 * 60 * 1000
+                                  (currentPagination - 1) *
+                                    7 *
+                                    24 *
+                                    60 *
+                                    60 *
+                                    1000
                               )
                             }
                           />
@@ -701,7 +724,7 @@ export default function Home() {
                             date={
                               new Date(
                                 startingDate.getTime() +
-                                  currentWeek * 7 * 24 * 60 * 60 * 1000
+                                  currentPagination * 7 * 24 * 60 * 60 * 1000
                               )
                             }
                           />
@@ -736,11 +759,11 @@ export default function Home() {
                                 <Button
                                   variant="plain"
                                   onClick={() =>
-                                    setCurrentWeek((d) => {
+                                    setCurrentPagination((d) => {
                                       const newValue = d - 1;
 
                                       if (
-                                        newValue <= totalWeeks - 1 &&
+                                        newValue <= maxPagination - 1 &&
                                         newValue > 0
                                       ) {
                                         return newValue;
@@ -758,47 +781,39 @@ export default function Home() {
                               <ToolbarItem className="pf-u-mx-0">
                                 <TextInput
                                   min="0"
-                                  value={currentWeek}
+                                  value={currentPagination}
                                   type="number"
                                   onChange={(value) => {
                                     const newValue = parseInt(value);
 
                                     if (
-                                      newValue <= totalWeeks &&
+                                      newValue <= maxPagination &&
                                       newValue > 0
                                     ) {
-                                      setCurrentWeek(newValue);
+                                      setCurrentPagination(newValue);
                                     }
                                   }}
                                   aria-label="Current day input"
                                   style={{
                                     width:
-                                      currentWeek.toString().length + 4 + "ch",
+                                      currentPagination.toString().length +
+                                      4 +
+                                      "ch",
                                   }}
                                   className="pf-u-mx-sm"
                                 />
-                                <span>
-                                  of{" "}
-                                  {scale === "month" &&
-                                    latestEntryDate.getMonth() -
-                                      earliestEntryDate.getMonth() +
-                                      12 *
-                                        (latestEntryDate.getFullYear() -
-                                          earliestEntryDate.getFullYear())}
-                                  {scale === "page" &&
-                                    Math.ceil(ENTRIES.length / 4)}
-                                </span>
+                                <span>of {maxPagination}</span>
                               </ToolbarItem>
 
                               <ToolbarItem className="pf-u-mx-0">
                                 <Button
                                   variant="plain"
                                   onClick={() =>
-                                    setCurrentWeek((d) => {
+                                    setCurrentPagination((d) => {
                                       const newValue = d + 1;
 
                                       if (
-                                        newValue <= totalWeeks &&
+                                        newValue <= maxPagination &&
                                         newValue > 0
                                       ) {
                                         return newValue;
@@ -845,9 +860,9 @@ export default function Home() {
                               id={entry.id.toString()}
                               key={entry.id}
                               entry={entry}
-                              selected={selectedEntryIndex === entry.id}
+                              selected={selectedEntryID === entry.id}
                               onClick={() =>
-                                setSelectedEntryIndex((e) =>
+                                setSelectedEntryID((e) =>
                                   e === entry.id ? -1 : entry.id
                                 )
                               }
@@ -886,9 +901,9 @@ export default function Home() {
                             id={entry.id.toString()}
                             key={entry.id}
                             entry={entry}
-                            selected={selectedEntryIndex === entry.id}
+                            selected={selectedEntryID === entry.id}
                             onClick={() =>
-                              setSelectedEntryIndex((e) =>
+                              setSelectedEntryID((e) =>
                                 e === entry.id ? -1 : entry.id
                               )
                             }
@@ -916,9 +931,9 @@ export default function Home() {
                           <EntryCard
                             id={entry.id.toString()}
                             entry={entry}
-                            selected={selectedEntryIndex === entry.id}
+                            selected={selectedEntryID === entry.id}
                             onClick={() =>
-                              setSelectedEntryIndex((e) =>
+                              setSelectedEntryID((e) =>
                                 e === entry.id ? -1 : entry.id
                               )
                             }
