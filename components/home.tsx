@@ -141,6 +141,13 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
   },
+  {
+    day: 11,
+    date: new Date("2023-02-02"),
+    title: "Ducimus",
+    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
+    topics: ["substance-use", "ibutamoren"],
+  },
 ];
 
 const TopicsChips: React.FC<{ topics: string[]; className?: string }> = ({
@@ -255,6 +262,19 @@ export default function Home() {
     "substance-use",
   ]);
   const [scale, setScale] = useState("week");
+
+  let { earliestEntryDate, latestEntryDate } = ENTRIES.reduce(
+    (prev, curr) => {
+      if (!prev.earliestEntryDate || curr.date < prev.earliestEntryDate) {
+        prev.earliestEntryDate = curr.date;
+      }
+      if (!prev.latestEntryDate || curr.date > prev.latestEntryDate) {
+        prev.latestEntryDate = curr.date;
+      }
+      return prev;
+    },
+    { earliestEntryDate: new Date(), latestEntryDate: new Date() }
+  );
 
   return (
     <Page
@@ -757,7 +777,17 @@ export default function Home() {
                                   }}
                                   className="pf-u-mx-sm"
                                 />
-                                <span>of {totalWeeks}</span>
+                                <span>
+                                  of{" "}
+                                  {scale === "month" &&
+                                    latestEntryDate.getMonth() -
+                                      earliestEntryDate.getMonth() +
+                                      12 *
+                                        (latestEntryDate.getFullYear() -
+                                          earliestEntryDate.getFullYear())}
+                                  {scale === "page" &&
+                                    Math.ceil(ENTRIES.length / 4)}
+                                </span>
                               </ToolbarItem>
 
                               <ToolbarItem className="pf-u-mx-0">
