@@ -170,6 +170,7 @@ interface IEntryCardProps {
   selected: boolean;
   showDate?: boolean;
   showDay?: boolean;
+  showMonth?: boolean;
 }
 
 const EntryCard: React.FC<IEntryCardProps> = ({
@@ -179,6 +180,7 @@ const EntryCard: React.FC<IEntryCardProps> = ({
   selected,
   showDate,
   showDay,
+  showMonth,
   ...otherProps
 }) => (
   <Card
@@ -214,13 +216,15 @@ const EntryCard: React.FC<IEntryCardProps> = ({
         <FlexItem>
           {showDate
             ? entry.date.toLocaleTimeString("default", {
-                weekday: "long",
-                hour: "2-digit",
-                minute: "2-digit",
+                weekday: "short",
+                hour: "numeric",
+                minute: "numeric",
+                month: showMonth ? "short" : undefined,
+                day: showMonth ? "numeric" : undefined,
               })
             : entry.date.toLocaleTimeString("default", {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour: "numeric",
+                minute: "numeric",
               })}
 
           {showDay && (
@@ -248,7 +252,6 @@ export default function Home() {
   const [filters, setFilters] = useState(false);
   const [selectedEntryID, setSelectedEntryID] = useState(-1);
   const [currentPagination, setCurrentPagination] = useState(1);
-  const [startingDate] = useState(new Date("2020-01-13"));
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
   const [activeTopics, setActiveTopics] = useState([
     "hrt",
@@ -275,10 +278,17 @@ export default function Home() {
     { earliestEntryDate: new Date(), latestEntryDate: new Date() }
   );
 
-  let maxPagination = 0;
+  let maxPages = 0;
+
+  let pageStartIndex = 0;
+  let pageEndIndex = 0;
+
+  let pageStartDate = new Date();
+  let pageEndDate = new Date();
+
   switch (scale) {
     case "week":
-      maxPagination = Math.round(
+      maxPages = Math.round(
         Math.ceil(
           Math.abs(latestEntryDate.getTime() - earliestEntryDate.getTime()) /
             (1000 * 60 * 60 * 24 * 7)
@@ -287,14 +297,22 @@ export default function Home() {
 
       break;
     case "month":
-      maxPagination =
+      maxPages =
         latestEntryDate.getMonth() -
         earliestEntryDate.getMonth() +
         12 * (latestEntryDate.getFullYear() - earliestEntryDate.getFullYear());
 
       break;
     case "page":
-      maxPagination = Math.ceil(ENTRIES.length / 4);
+      maxPages = Math.ceil(ENTRIES.length / 4);
+
+      pageStartIndex =
+        currentPagination - 1 <= 0 ? 0 : (currentPagination - 1) * 4;
+      pageEndIndex = currentPagination - 1 <= 0 ? 4 : currentPagination * 4;
+      if (!ENTRIES[pageEndIndex]) pageEndIndex = ENTRIES.length;
+
+      pageStartDate = ENTRIES[pageStartIndex].date;
+      pageEndDate = ENTRIES[pageEndIndex - 1].date;
 
       break;
   }
@@ -626,8 +644,8 @@ export default function Home() {
                       month: "numeric",
                       day: "numeric",
                       weekday: "long",
-                      hour: "2-digit",
-                      minute: "2-digit",
+                      hour: "numeric",
+                      minute: "numeric",
                     })}
                   </div>
 
@@ -704,30 +722,9 @@ export default function Home() {
                       <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm pf-u-mr-md pf-u-display-none pf-u-display-block-on-sm">
                         <CalendarWeekIcon className="pf-u-mr-sm" />{" "}
                         <div className="pf-x-timestamp-wrapper pf-u-display-inline">
-                          <Timestamp
-                            dateFormat="short"
-                            date={
-                              new Date(
-                                startingDate.getTime() +
-                                  (currentPagination - 1) *
-                                    7 *
-                                    24 *
-                                    60 *
-                                    60 *
-                                    1000
-                              )
-                            }
-                          />
+                          <Timestamp dateFormat="short" date={pageStartDate} />
                           {" - "}
-                          <Timestamp
-                            dateFormat="short"
-                            date={
-                              new Date(
-                                startingDate.getTime() +
-                                  currentPagination * 7 * 24 * 60 * 60 * 1000
-                              )
-                            }
-                          />
+                          <Timestamp dateFormat="short" date={pageEndDate} />
                         </div>
                       </FlexItem>
 
@@ -763,7 +760,7 @@ export default function Home() {
                                       const newValue = d - 1;
 
                                       if (
-                                        newValue <= maxPagination - 1 &&
+                                        newValue <= maxPages - 1 &&
                                         newValue > 0
                                       ) {
                                         return newValue;
@@ -786,10 +783,7 @@ export default function Home() {
                                   onChange={(value) => {
                                     const newValue = parseInt(value);
 
-                                    if (
-                                      newValue <= maxPagination &&
-                                      newValue > 0
-                                    ) {
+                                    if (newValue <= maxPages && newValue > 0) {
                                       setCurrentPagination(newValue);
                                     }
                                   }}
@@ -802,7 +796,7 @@ export default function Home() {
                                   }}
                                   className="pf-u-mx-sm"
                                 />
-                                <span>of {maxPagination}</span>
+                                <span>of {maxPages}</span>
                               </ToolbarItem>
 
                               <ToolbarItem className="pf-u-mx-0">
@@ -813,7 +807,7 @@ export default function Home() {
                                       const newValue = d + 1;
 
                                       if (
-                                        newValue <= maxPagination &&
+                                        newValue <= maxPages &&
                                         newValue > 0
                                       ) {
                                         return newValue;
@@ -925,7 +919,7 @@ export default function Home() {
                           activeTopics.filter((v) => e.topics.includes(v))
                             .length > 0
                       )
-                      .slice(0, 4)
+                      .slice(pageStartIndex, pageEndIndex)
                       .map((entry) => (
                         <GridItem span={6} key={entry.id}>
                           <EntryCard
@@ -939,6 +933,7 @@ export default function Home() {
                             }
                             showDate
                             showDay
+                            showMonth
                           />
                         </GridItem>
                       ))}
