@@ -295,6 +295,32 @@ export default function Home() {
         )
       );
 
+      const pageMinDate =
+        earliestEntryDate.getTime() +
+        (currentPagination - 1 <= 0
+          ? 0
+          : (currentPagination - 1) * 1000 * 60 * 60 * 24 * 7);
+      const pageMaxDate =
+        earliestEntryDate.getTime() +
+        (currentPagination - 1 <= 0
+          ? 1000 * 60 * 60 * 24 * 7
+          : currentPagination * 1000 * 60 * 60 * 24 * 7);
+
+      pageStartIndex = ENTRIES.findIndex(
+        (e) =>
+          e.date.getTime() >= pageMinDate && e.date.getTime() <= pageMaxDate
+      );
+
+      pageEndIndex = ENTRIES.slice()
+        .reverse()
+        .findIndex(
+          (e) =>
+            e.date.getTime() >= pageMinDate && e.date.getTime() <= pageMaxDate
+        );
+
+      pageStartDate = new Date(pageMinDate);
+      pageEndDate = new Date(pageEndDate);
+
       break;
     case "month":
       maxPages =
@@ -852,6 +878,7 @@ export default function Home() {
                               activeTopics.filter((v) => e.topics.includes(v))
                                 .length > 0
                           )
+                          .slice(pageStartIndex, pageEndIndex)
                           .map((entry) => (
                             <EntryCard
                               id={entry.id.toString()}
@@ -893,6 +920,7 @@ export default function Home() {
                             activeTopics.filter((v) => e.topics.includes(v))
                               .length > 0
                         )
+                        .slice(pageStartIndex, pageEndIndex)
                         .map((entry) => (
                           <EntryCard
                             id={entry.id.toString()}
