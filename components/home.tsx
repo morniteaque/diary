@@ -359,6 +359,9 @@ export default function Home() {
 
                 <PageHeaderToolsItem>
                   <Button
+                    href="https://ko-fi.com/aphreditto"
+                    component="a"
+                    target="_blank"
                     aria-label="Donate"
                     variant={ButtonVariant.link}
                     className="pf-x-u-color--unset pf-u-ml-sm"
