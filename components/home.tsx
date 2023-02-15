@@ -144,7 +144,7 @@ const ENTRIES: IEntry[] = [
   {
     day: 11,
     date: new Date("2023-02-02"),
-    title: "Ducimus",
+    title: "Ducimusss",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
   },
@@ -287,49 +287,72 @@ export default function Home() {
   let pageEndDate = new Date();
 
   switch (scale) {
-    case "week":
+    case "week": {
       maxPages = Math.round(
-        Math.ceil(
-          Math.abs(latestEntryDate.getTime() - earliestEntryDate.getTime()) /
-            (1000 * 60 * 60 * 24 * 7)
-        )
+        (latestEntryDate.getTime() - earliestEntryDate.getTime()) /
+          (1000 * 60 * 60 * 24 * 7)
       );
 
-      const pageMinDate =
-        earliestEntryDate.getTime() +
-        (currentPagination - 1 <= 0
-          ? 0
-          : (currentPagination - 1) * 1000 * 60 * 60 * 24 * 7);
-      const pageMaxDate =
-        earliestEntryDate.getTime() +
-        (currentPagination - 1 <= 0
-          ? 1000 * 60 * 60 * 24 * 7
-          : currentPagination * 1000 * 60 * 60 * 24 * 7);
+      const pageMinDate = new Date(
+        earliestEntryDate.getFullYear(),
+        earliestEntryDate.getMonth(),
+        1 + (currentPagination - 1) * 7
+      );
+
+      const pageMaxDate = new Date(
+        earliestEntryDate.getFullYear(),
+        earliestEntryDate.getMonth(),
+        0 + currentPagination * 7
+      );
 
       pageStartIndex = ENTRIES.findIndex(
         (e) =>
-          e.date.getTime() >= pageMinDate && e.date.getTime() <= pageMaxDate
+          e.date.getTime() >= pageMinDate.getTime() &&
+          e.date.getTime() <= pageMaxDate.getTime()
       );
 
-      pageEndIndex = ENTRIES.slice()
-        .reverse()
-        .findIndex(
-          (e) =>
-            e.date.getTime() >= pageMinDate && e.date.getTime() <= pageMaxDate
-        );
-
-      pageStartDate = new Date(pageMinDate);
-      pageEndDate = new Date(pageEndDate);
+      // See https://github.com/microsoft/TypeScript/issues/48829
+      pageEndIndex =
+        (ENTRIES as any).findLastIndex(
+          (e: IEntry) =>
+            e.date.getTime() >= pageMinDate.getTime() &&
+            e.date.getTime() <= pageMaxDate.getTime()
+        ) + 1;
 
       break;
-    case "month":
-      maxPages =
-        latestEntryDate.getMonth() -
-        earliestEntryDate.getMonth() +
-        12 * (latestEntryDate.getFullYear() - earliestEntryDate.getFullYear());
+    }
+    case "month": {
+      maxPages = latestEntryDate.getMonth() - earliestEntryDate.getMonth() + 1;
+
+      const pageMinDate = new Date(
+        earliestEntryDate.getFullYear(),
+        earliestEntryDate.getMonth() + (currentPagination - 1),
+        1
+      );
+
+      const pageMaxDate = new Date(
+        earliestEntryDate.getFullYear(),
+        earliestEntryDate.getMonth() + currentPagination,
+        0
+      );
+
+      pageStartIndex = ENTRIES.findIndex(
+        (e) =>
+          e.date.getTime() >= pageMinDate.getTime() &&
+          e.date.getTime() <= pageMaxDate.getTime()
+      );
+
+      // See https://github.com/microsoft/TypeScript/issues/48829
+      pageEndIndex =
+        (ENTRIES as any).findLastIndex(
+          (e: IEntry) =>
+            e.date.getTime() >= pageMinDate.getTime() &&
+            e.date.getTime() <= pageMaxDate.getTime()
+        ) + 1;
 
       break;
-    case "page":
+    }
+    case "page": {
       maxPages = Math.ceil(ENTRIES.length / 4);
 
       pageStartIndex =
@@ -341,6 +364,7 @@ export default function Home() {
       pageEndDate = ENTRIES[pageEndIndex - 1].date;
 
       break;
+    }
   }
 
   return (
@@ -872,13 +896,13 @@ export default function Home() {
                         </div>
 
                         {ENTRIES.map((v, id) => ({ id, ...v }))
+                          .slice(pageStartIndex, pageEndIndex)
                           .filter(
                             (e) =>
                               e.date.getDay() == i &&
                               activeTopics.filter((v) => e.topics.includes(v))
                                 .length > 0
                           )
-                          .slice(pageStartIndex, pageEndIndex)
                           .map((entry) => (
                             <EntryCard
                               id={entry.id.toString()}
@@ -905,6 +929,7 @@ export default function Home() {
                       <div className="pf-x-c-grid__header">{week}</div>
 
                       {ENTRIES.map((v, id) => ({ id, ...v }))
+                        .slice(pageStartIndex, pageEndIndex)
                         .filter(
                           (e) =>
                             Math.ceil(
@@ -920,7 +945,6 @@ export default function Home() {
                             activeTopics.filter((v) => e.topics.includes(v))
                               .length > 0
                         )
-                        .slice(pageStartIndex, pageEndIndex)
                         .map((entry) => (
                           <EntryCard
                             id={entry.id.toString()}
@@ -945,12 +969,12 @@ export default function Home() {
                 <div className="pf-x-c-page">
                   <Grid className="pf-x-c-grid pf-u-p-md" hasGutter>
                     {ENTRIES.map((v, id) => ({ id, ...v }))
+                      .slice(pageStartIndex, pageEndIndex)
                       .filter(
                         (e) =>
                           activeTopics.filter((v) => e.topics.includes(v))
                             .length > 0
                       )
-                      .slice(pageStartIndex, pageEndIndex)
                       .map((entry) => (
                         <GridItem span={6} key={entry.id}>
                           <EntryCard
