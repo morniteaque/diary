@@ -72,6 +72,8 @@ import Link from "next/link";
 import React, { ReactNode, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
+const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
+
 const TOPICS = [
   ["HRT", "hrt"],
   ["FFS", "ffs"],
@@ -100,49 +102,49 @@ const ENTRIES: IEntry[] = [
     topics: ["substance-use"],
   },
   {
-    day: 1,
+    day: 17,
     date: new Date("2023-01-20 11:30"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["coming-out"],
   },
   {
-    day: 3,
+    day: 20,
     date: new Date("2023-01-23 09:30"),
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
   },
   {
-    day: 4,
+    day: 20,
     date: new Date("2023-01-23 16:30"),
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "hrt"],
   },
   {
-    day: 5,
+    day: 21,
     date: new Date("2023-01-24"),
     title: "Amet",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "domperidone"],
   },
   {
-    day: 6,
+    day: 22,
     date: new Date("2023-01-25"),
     title: "Consectur",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["coming-out"],
   },
   {
-    day: 7,
+    day: 23,
     date: new Date("2023-01-26"),
     title: "Ducimus",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
   },
   {
-    day: 11,
+    day: 30,
     date: new Date("2023-02-02"),
     title: "Ducimusss",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
@@ -265,17 +267,24 @@ export default function Home() {
   ]);
   const [scale, setScale] = useState("week");
 
-  let { earliestEntryDate, latestEntryDate } = ENTRIES.reduce(
+  let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
       if (!prev.earliestEntryDate || curr.date < prev.earliestEntryDate) {
         prev.earliestEntryDate = curr.date;
+        prev.earliestEntry = curr;
       }
+
       if (!prev.latestEntryDate || curr.date > prev.latestEntryDate) {
         prev.latestEntryDate = curr.date;
       }
+
       return prev;
     },
-    { earliestEntryDate: new Date(), latestEntryDate: new Date() }
+    {
+      earliestEntryDate: new Date(),
+      earliestEntry: {} as IEntry,
+      latestEntryDate: new Date(),
+    }
   );
 
   let maxPages = 0;
@@ -290,7 +299,7 @@ export default function Home() {
     case "week": {
       maxPages = Math.round(
         (latestEntryDate.getTime() - earliestEntryDate.getTime()) /
-          (1000 * 60 * 60 * 24 * 7)
+          (DAY_MILLISECONDS * 7)
       );
 
       pageStartDate = new Date(
@@ -699,7 +708,11 @@ export default function Home() {
                       weekday: "long",
                       hour: "numeric",
                       minute: "numeric",
-                    })}
+                    })}{" "}
+                    ·{" "}
+                    <span className="pf-u-color-300">
+                      Day {ENTRIES[selectedEntryID]?.day}
+                    </span>
                   </div>
 
                   <TopicsChips
@@ -891,7 +904,12 @@ export default function Home() {
                         <div className="pf-x-c-grid__header">
                           {day} ·{" "}
                           <span className="pf-u-color-300">
-                            Day {ENTRIES.find((e) => e.date.getDay() == i)?.day}
+                            Day{" "}
+                            {earliestEntry.day +
+                              ((currentPagination - 1) * DAY_MILLISECONDS * 7 +
+                                i * DAY_MILLISECONDS) /
+                                DAY_MILLISECONDS -
+                              earliestEntryDate.getDay()}
                           </span>
                         </div>
 
