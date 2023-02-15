@@ -800,7 +800,10 @@ export default function Home() {
                             <ToolbarItem>
                               <FormSelect
                                 value={scale}
-                                onChange={setScale}
+                                onChange={(v) => {
+                                  setCurrentPagination(1);
+                                  setScale(v);
+                                }}
                                 aria-label="Scale input"
                               >
                                 {[
