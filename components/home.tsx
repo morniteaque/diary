@@ -293,13 +293,13 @@ export default function Home() {
           (1000 * 60 * 60 * 24 * 7)
       );
 
-      const pageMinDate = new Date(
+      pageStartDate = new Date(
         earliestEntryDate.getFullYear(),
         earliestEntryDate.getMonth(),
         1 + (currentPagination - 1) * 7
       );
 
-      const pageMaxDate = new Date(
+      pageEndDate = new Date(
         earliestEntryDate.getFullYear(),
         earliestEntryDate.getMonth(),
         0 + currentPagination * 7
@@ -307,16 +307,16 @@ export default function Home() {
 
       pageStartIndex = ENTRIES.findIndex(
         (e) =>
-          e.date.getTime() >= pageMinDate.getTime() &&
-          e.date.getTime() <= pageMaxDate.getTime()
+          e.date.getTime() >= pageStartDate.getTime() &&
+          e.date.getTime() <= pageEndDate.getTime()
       );
 
       // See https://github.com/microsoft/TypeScript/issues/48829
       pageEndIndex =
         (ENTRIES as any).findLastIndex(
           (e: IEntry) =>
-            e.date.getTime() >= pageMinDate.getTime() &&
-            e.date.getTime() <= pageMaxDate.getTime()
+            e.date.getTime() >= pageStartDate.getTime() &&
+            e.date.getTime() <= pageEndDate.getTime()
         ) + 1;
 
       break;
@@ -324,13 +324,13 @@ export default function Home() {
     case "month": {
       maxPages = latestEntryDate.getMonth() - earliestEntryDate.getMonth() + 1;
 
-      const pageMinDate = new Date(
+      pageStartDate = new Date(
         earliestEntryDate.getFullYear(),
         earliestEntryDate.getMonth() + (currentPagination - 1),
         1
       );
 
-      const pageMaxDate = new Date(
+      pageEndDate = new Date(
         earliestEntryDate.getFullYear(),
         earliestEntryDate.getMonth() + currentPagination,
         0
@@ -338,16 +338,16 @@ export default function Home() {
 
       pageStartIndex = ENTRIES.findIndex(
         (e) =>
-          e.date.getTime() >= pageMinDate.getTime() &&
-          e.date.getTime() <= pageMaxDate.getTime()
+          e.date.getTime() >= pageStartDate.getTime() &&
+          e.date.getTime() <= pageEndDate.getTime()
       );
 
       // See https://github.com/microsoft/TypeScript/issues/48829
       pageEndIndex =
         (ENTRIES as any).findLastIndex(
           (e: IEntry) =>
-            e.date.getTime() >= pageMinDate.getTime() &&
-            e.date.getTime() <= pageMaxDate.getTime()
+            e.date.getTime() >= pageStartDate.getTime() &&
+            e.date.getTime() <= pageEndDate.getTime()
         ) + 1;
 
       break;
