@@ -559,6 +559,7 @@ export default function Home() {
                             aria-label="Toggle the available filters"
                             isSelected={filters}
                             onChange={() => setFilters((v) => !v)}
+                            isDisabled
                           />
                         </Tooltip>
                       </ToggleGroup>
@@ -1048,10 +1049,16 @@ export default function Home() {
                       </FlexItem>
 
                       <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm">
-                        <Link href="/imprint" className="pf-x-u-color--unset">
-                          <StampIcon className="pf-u-mr-sm" />
-                          Imprint
-                        </Link>
+                        <Tooltip
+                          content="No imprint is required for this site as it is not for profit and does not operate as a newspaper or blog."
+                          position="left-end"
+                          enableFlip
+                        >
+                          <Link href="#" className="pf-u-color-200">
+                            <StampIcon className="pf-u-mr-sm" />
+                            Imprint
+                          </Link>
+                        </Tooltip>
                       </FlexItem>
                     </Flex>
                   </PanelMainBody>
