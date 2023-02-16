@@ -1004,7 +1004,7 @@ export default function Home() {
                 <div className="pf-x-c-page">
                   <Grid className="pf-x-c-grid pf-u-p-md" hasGutter>
                     {entriesToShow.map((entry) => (
-                      <GridItem span={6} key={entry.id}>
+                      <GridItem span={12} md={6} key={entry.id}>
                         <EntryCard
                           id={entry.id.toString()}
                           entry={entry}
