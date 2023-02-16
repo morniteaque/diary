@@ -73,6 +73,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
+const DIARY_DETAIL_KEY = "diary.detail";
 
 const TOPICS = [
   ["HRT", "hrt"],
@@ -91,6 +92,7 @@ interface IEntry {
   title: string;
   text: string;
   topics: string[];
+  detail: number;
 }
 
 const ENTRIES: IEntry[] = [
@@ -100,6 +102,7 @@ const ENTRIES: IEntry[] = [
     title: "Dolor",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["substance-use"],
+    detail: 50,
   },
   {
     day: 17,
@@ -107,6 +110,7 @@ const ENTRIES: IEntry[] = [
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["coming-out"],
+    detail: 25,
   },
   {
     day: 20,
@@ -114,6 +118,7 @@ const ENTRIES: IEntry[] = [
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
+    detail: 75,
   },
   {
     day: 20,
@@ -121,6 +126,7 @@ const ENTRIES: IEntry[] = [
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "hrt"],
+    detail: 50,
   },
   {
     day: 21,
@@ -128,6 +134,7 @@ const ENTRIES: IEntry[] = [
     title: "Amet",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "domperidone"],
+    detail: 25,
   },
   {
     day: 22,
@@ -135,6 +142,7 @@ const ENTRIES: IEntry[] = [
     title: "Consectur",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["coming-out"],
+    detail: 100,
   },
   {
     day: 23,
@@ -142,6 +150,7 @@ const ENTRIES: IEntry[] = [
     title: "Ducimus",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
+    detail: 75,
   },
   {
     day: 30,
@@ -149,6 +158,7 @@ const ENTRIES: IEntry[] = [
     title: "Ducimusss",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
+    detail: 50,
   },
 ];
 
@@ -249,7 +259,7 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [nsfw, setNSFW] = useState(false);
-  const [detail, setDetail] = useState(75);
+  const [detail, setDetail] = useState(100);
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
   const [selectedEntryID, setSelectedEntryID] = useState(-1);
@@ -266,6 +276,16 @@ export default function Home() {
     "substance-use",
   ]);
   const [scale, setScale] = useState("week");
+
+  useEffect(() => {
+    const v = localStorage.getItem("diary.detail") || "100";
+
+    setDetail(parseInt(v));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(DIARY_DETAIL_KEY, detail.toString());
+  }, [detail]);
 
   let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
@@ -378,7 +398,11 @@ export default function Home() {
 
   const entriesToShow = ENTRIES.map((v, id) => ({ id, ...v }))
     .slice(pageStartIndex, pageEndIndex)
-    .filter((e) => activeTopics.filter((v) => e.topics.includes(v)).length > 0);
+    .filter(
+      (e) =>
+        activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
+        e.detail <= detail
+    );
 
   useEffect(() => {
     if (
