@@ -69,7 +69,7 @@ import {
   StampIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
@@ -375,6 +375,29 @@ export default function Home() {
       break;
     }
   }
+
+  const entriesToShow = ENTRIES.map((v, id) => ({ id, ...v }))
+    .slice(pageStartIndex, pageEndIndex)
+    .filter((e) => activeTopics.filter((v) => e.topics.includes(v)).length > 0);
+
+  useEffect(() => {
+    if (
+      selectedEntryID == -1 ||
+      entriesToShow.find((e) => e.id === selectedEntryID)
+    ) {
+      return;
+    }
+
+    setCurrentPagination((d) => {
+      const newValue = d + 1;
+
+      if (newValue <= maxPages && newValue > 0) {
+        return newValue;
+      }
+
+      return 1;
+    });
+  }, [selectedEntryID, currentPagination]);
 
   return (
     <Page
@@ -916,14 +939,8 @@ export default function Home() {
                           </span>
                         </div>
 
-                        {ENTRIES.map((v, id) => ({ id, ...v }))
-                          .slice(pageStartIndex, pageEndIndex)
-                          .filter(
-                            (e) =>
-                              e.date.getDay() == i &&
-                              activeTopics.filter((v) => e.topics.includes(v))
-                                .length > 0
-                          )
+                        {entriesToShow
+                          .filter((e) => e.date.getDay() == i)
                           .map((entry) => (
                             <EntryCard
                               id={entry.id.toString()}
@@ -949,8 +966,7 @@ export default function Home() {
                     <GridItem span={1} key={i}>
                       <div className="pf-x-c-grid__header">{week}</div>
 
-                      {ENTRIES.map((v, id) => ({ id, ...v }))
-                        .slice(pageStartIndex, pageEndIndex)
+                      {entriesToShow
                         .filter(
                           (e) =>
                             Math.ceil(
@@ -962,9 +978,7 @@ export default function Home() {
                                 ).getDay()) /
                                 7
                             ) ==
-                              i + 1 &&
-                            activeTopics.filter((v) => e.topics.includes(v))
-                              .length > 0
+                            i + 1
                         )
                         .map((entry) => (
                           <EntryCard
@@ -989,30 +1003,23 @@ export default function Home() {
               {scale === "page" && (
                 <div className="pf-x-c-page">
                   <Grid className="pf-x-c-grid pf-u-p-md" hasGutter>
-                    {ENTRIES.map((v, id) => ({ id, ...v }))
-                      .slice(pageStartIndex, pageEndIndex)
-                      .filter(
-                        (e) =>
-                          activeTopics.filter((v) => e.topics.includes(v))
-                            .length > 0
-                      )
-                      .map((entry) => (
-                        <GridItem span={6} key={entry.id}>
-                          <EntryCard
-                            id={entry.id.toString()}
-                            entry={entry}
-                            selected={selectedEntryID === entry.id}
-                            onClick={() =>
-                              setSelectedEntryID((e) =>
-                                e === entry.id ? -1 : entry.id
-                              )
-                            }
-                            showDate
-                            showDay
-                            showMonth
-                          />
-                        </GridItem>
-                      ))}
+                    {entriesToShow.map((entry) => (
+                      <GridItem span={6} key={entry.id}>
+                        <EntryCard
+                          id={entry.id.toString()}
+                          entry={entry}
+                          selected={selectedEntryID === entry.id}
+                          onClick={() =>
+                            setSelectedEntryID((e) =>
+                              e === entry.id ? -1 : entry.id
+                            )
+                          }
+                          showDate
+                          showDay
+                          showMonth
+                        />
+                      </GridItem>
+                    ))}
                   </Grid>
                 </div>
               )}
