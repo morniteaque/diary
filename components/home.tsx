@@ -69,7 +69,7 @@ import {
   StampIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
@@ -102,7 +102,7 @@ const ENTRIES: IEntry[] = [
     title: "Dolor",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["substance-use"],
-    detail: 50,
+    detail: 10,
   },
   {
     day: 17,
@@ -110,7 +110,7 @@ const ENTRIES: IEntry[] = [
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["coming-out"],
-    detail: 25,
+    detail: 1,
   },
   {
     day: 20,
@@ -118,7 +118,7 @@ const ENTRIES: IEntry[] = [
     title: "Lorem",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
-    detail: 75,
+    detail: 65,
   },
   {
     day: 20,
@@ -126,7 +126,7 @@ const ENTRIES: IEntry[] = [
     title: "Ipsum",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "hrt"],
-    detail: 50,
+    detail: 20,
   },
   {
     day: 21,
@@ -134,7 +134,7 @@ const ENTRIES: IEntry[] = [
     title: "Amet",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "domperidone"],
-    detail: 25,
+    detail: 30,
   },
   {
     day: 22,
@@ -142,7 +142,7 @@ const ENTRIES: IEntry[] = [
     title: "Consectur",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["coming-out"],
-    detail: 100,
+    detail: 40,
   },
   {
     day: 23,
@@ -150,7 +150,7 @@ const ENTRIES: IEntry[] = [
     title: "Ducimus",
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
-    detail: 75,
+    detail: 100,
   },
   {
     day: 30,
@@ -382,37 +382,66 @@ export default function Home() {
       break;
     }
     case "page": {
-      maxPages = Math.ceil(ENTRIES.length / 4);
+      const filteredEntries = ENTRIES.filter(
+        (e) =>
+          activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
+          e.detail <= detail
+      );
+
+      maxPages = Math.ceil(filteredEntries.length / 4);
 
       pageStartIndex =
         currentPagination - 1 <= 0 ? 0 : (currentPagination - 1) * 4;
       pageEndIndex = currentPagination - 1 <= 0 ? 4 : currentPagination * 4;
-      if (!ENTRIES[pageEndIndex]) pageEndIndex = ENTRIES.length;
+      if (!filteredEntries[pageEndIndex]) pageEndIndex = filteredEntries.length;
 
-      pageStartDate = ENTRIES[pageStartIndex].date;
-      pageEndDate = ENTRIES[pageEndIndex - 1].date;
+      pageStartDate = filteredEntries[pageStartIndex].date;
+      pageEndDate = filteredEntries[pageEndIndex - 1].date;
 
       break;
     }
   }
 
-  const entriesToShow = ENTRIES.map((v, id) => ({ id, ...v }))
-    .slice(pageStartIndex, pageEndIndex)
-    .filter(
-      (e) =>
-        activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
-        e.detail <= detail
-    );
+  const entriesToShow =
+    scale === "page"
+      ? ENTRIES.map((v, id) => ({ id, ...v }))
+          .filter(
+            (e) =>
+              activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
+              e.detail <= detail
+          )
+          .slice(pageStartIndex, pageEndIndex)
+      : ENTRIES.map((v, id) => ({ id, ...v }))
+          .slice(pageStartIndex, pageEndIndex)
+          .filter(
+            (e) =>
+              activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
+              e.detail <= detail
+          );
 
+  let wentBackwards = useRef(false);
   useEffect(() => {
     if (
-      selectedEntryID == -1 ||
-      entriesToShow.find((e) => e.id === selectedEntryID)
+      (selectedEntryID == -1 ||
+        entriesToShow.find((e) => e.id === selectedEntryID)) &&
+      !(activeTopics.length > 0 && entriesToShow.length === 0)
     ) {
+      wentBackwards.current = false;
+
       return;
     }
 
     setCurrentPagination((d) => {
+      if (wentBackwards.current) {
+        const newValue = d - 1;
+
+        if (newValue <= maxPages - 1 && newValue > 0) {
+          return newValue;
+        }
+
+        return 1;
+      }
+
       const newValue = d + 1;
 
       if (newValue <= maxPages && newValue > 0) {
@@ -421,7 +450,7 @@ export default function Home() {
 
       return 1;
     });
-  }, [selectedEntryID, currentPagination]);
+  }, [selectedEntryID, currentPagination, detail, activeTopics]);
 
   return (
     <Page
@@ -489,11 +518,17 @@ export default function Home() {
                     key={i}
                     isActive={activeTopics.includes(el[1])}
                     onClick={() =>
-                      setActiveTopics((o) =>
-                        o.includes(el[1])
+                      setActiveTopics((o) => {
+                        const newTopics = o.includes(el[1])
                           ? o.filter((j) => j !== el[1])
-                          : [...o, el[1]]
-                      )
+                          : [...o, el[1]];
+
+                        if (newTopics.length < 1) {
+                          return o;
+                        }
+
+                        return newTopics;
+                      })
                     }
                     className={"pf-x-navlink-" + el[1]}
                   >
@@ -550,17 +585,27 @@ export default function Home() {
                         position="bottom"
                       >
                         <Slider
+                          min={1}
+                          max={100}
                           value={detail}
                           isInputVisible
                           inputPosition="right"
                           inputValue={detail}
                           inputLabel="%"
-                          onChange={setDetail}
-                          onInputCapture={(e) =>
-                            setDetail(
-                              parseInt((e.target as HTMLInputElement).value)
-                            )
-                          }
+                          onChange={(e) => {
+                            if (e > 0 && e <= 100) {
+                              setDetail(e);
+                            }
+                          }}
+                          onInputCapture={(e) => {
+                            const newDetail = parseInt(
+                              (e.target as HTMLInputElement).value
+                            );
+
+                            if (newDetail > 0 && newDetail <= 100) {
+                              setDetail(newDetail);
+                            }
+                          }}
                           className="pf-u-mt-md"
                         />
                       </Tooltip>
@@ -874,6 +919,8 @@ export default function Home() {
                                   variant="plain"
                                   onClick={() =>
                                     setCurrentPagination((d) => {
+                                      wentBackwards.current = true;
+
                                       const newValue = d - 1;
 
                                       if (
@@ -921,6 +968,8 @@ export default function Home() {
                                   variant="plain"
                                   onClick={() =>
                                     setCurrentPagination((d) => {
+                                      wentBackwards.current = false;
+
                                       const newValue = d + 1;
 
                                       if (
