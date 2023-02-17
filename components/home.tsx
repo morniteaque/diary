@@ -73,8 +73,9 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import icon from "../docs/icon-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
-const DIARY_DETAIL_KEY = "diary.detail";
 const DIARY_NSFW_KEY = "diary.nsfw";
+const DIARY_DETAIL_KEY = "diary.detail";
+const DIARY_ACTIVE_TOPICS_KEY = "diary.activeTopics";
 
 const TOPICS = [
   ["HRT", "hrt"],
@@ -269,35 +270,48 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [nsfw, setNSFW] = useState(
-    (localStorage.getItem(DIARY_NSFW_KEY) || "false") === "true"
+    JSON.parse(
+      localStorage.getItem(DIARY_NSFW_KEY) || JSON.stringify(false)
+    ) as boolean
   );
   const [detail, setDetail] = useState(
-    parseInt(localStorage.getItem(DIARY_DETAIL_KEY) || "100")
+    JSON.parse(
+      localStorage.getItem(DIARY_DETAIL_KEY) || JSON.stringify(100)
+    ) as number
   );
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
   const [selectedEntryID, setSelectedEntryID] = useState(-1);
   const [currentPagination, setCurrentPagination] = useState(1);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
-  const [activeTopics, setActiveTopics] = useState([
-    "hrt",
-    "ffs",
-    "srs",
-    "domperidone",
-    "ibutamoren",
-    "depression",
-    "coming-out",
-    "substance-use",
-  ]);
+  const [activeTopics, setActiveTopics] = useState(
+    JSON.parse(
+      localStorage.getItem(DIARY_ACTIVE_TOPICS_KEY) ||
+        JSON.stringify([
+          "hrt",
+          "ffs",
+          "srs",
+          "domperidone",
+          "ibutamoren",
+          "depression",
+          "coming-out",
+          "substance-use",
+        ])
+    ) as string[]
+  );
   const [scale, setScale] = useState("week");
 
   useEffect(() => {
-    localStorage.setItem(DIARY_DETAIL_KEY, detail.toString());
+    localStorage.setItem(DIARY_DETAIL_KEY, JSON.stringify(detail));
   }, [detail]);
 
   useEffect(() => {
-    localStorage.setItem(DIARY_NSFW_KEY, nsfw ? "true" : "false");
+    localStorage.setItem(DIARY_NSFW_KEY, JSON.stringify(nsfw));
   }, [nsfw]);
+
+  useEffect(() => {
+    localStorage.setItem(DIARY_ACTIVE_TOPICS_KEY, JSON.stringify(activeTopics));
+  }, [activeTopics]);
 
   let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
