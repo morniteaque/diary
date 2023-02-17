@@ -93,6 +93,7 @@ interface IEntry {
   text: string;
   topics: string[];
   detail: number;
+  nsfw: boolean;
 }
 
 const ENTRIES: IEntry[] = [
@@ -103,6 +104,7 @@ const ENTRIES: IEntry[] = [
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["substance-use"],
     detail: 10,
+    nsfw: false,
   },
   {
     day: 17,
@@ -111,6 +113,7 @@ const ENTRIES: IEntry[] = [
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["coming-out"],
     detail: 1,
+    nsfw: false,
   },
   {
     day: 20,
@@ -119,6 +122,7 @@ const ENTRIES: IEntry[] = [
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
     topics: ["hrt"],
     detail: 65,
+    nsfw: false,
   },
   {
     day: 20,
@@ -127,6 +131,7 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "hrt"],
     detail: 20,
+    nsfw: true,
   },
   {
     day: 21,
@@ -135,6 +140,7 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["ffs", "domperidone"],
     detail: 30,
+    nsfw: false,
   },
   {
     day: 22,
@@ -143,6 +149,7 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["coming-out"],
     detail: 40,
+    nsfw: false,
   },
   {
     day: 23,
@@ -151,6 +158,7 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
     detail: 100,
+    nsfw: true,
   },
   {
     day: 30,
@@ -159,6 +167,7 @@ const ENTRIES: IEntry[] = [
     text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
     topics: ["substance-use", "ibutamoren"],
     detail: 50,
+    nsfw: true,
   },
 ];
 
@@ -315,6 +324,13 @@ export default function Home() {
   let pageStartDate = new Date();
   let pageEndDate = new Date();
 
+  const filter = (e: IEntry) =>
+    activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
+    e.detail <= detail &&
+    nsfw
+      ? true
+      : !e.nsfw;
+
   switch (scale) {
     case "week": {
       maxPages = Math.round(
@@ -382,11 +398,7 @@ export default function Home() {
       break;
     }
     case "page": {
-      const filteredEntries = ENTRIES.filter(
-        (e) =>
-          activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
-          e.detail <= detail
-      );
+      const filteredEntries = ENTRIES.filter(filter);
 
       maxPages = Math.ceil(filteredEntries.length / 4);
 
@@ -405,19 +417,11 @@ export default function Home() {
   const entriesToShow =
     scale === "page"
       ? ENTRIES.map((v, id) => ({ id, ...v }))
-          .filter(
-            (e) =>
-              activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
-              e.detail <= detail
-          )
+          .filter(filter)
           .slice(pageStartIndex, pageEndIndex)
       : ENTRIES.map((v, id) => ({ id, ...v }))
           .slice(pageStartIndex, pageEndIndex)
-          .filter(
-            (e) =>
-              activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
-              e.detail <= detail
-          );
+          .filter(filter);
 
   let wentBackwards = useRef(false);
   useEffect(() => {
@@ -450,7 +454,7 @@ export default function Home() {
 
       return 1;
     });
-  }, [selectedEntryID, currentPagination, detail, activeTopics]);
+  }, [selectedEntryID, currentPagination, detail, activeTopics, nsfw]);
 
   return (
     <Page
@@ -620,12 +624,12 @@ export default function Home() {
                     <ToolbarItem className="pf-u-display-none pf-u-display-inline-flex-on-md">
                       <ToggleGroup aria-label="Filter controls">
                         <Tooltip
-                          content="Toggle the available filters"
+                          content="Toggle the available filters (coming soon)"
                           position="bottom"
                         >
                           <ToggleGroupItem
                             icon={<FilterIcon />}
-                            aria-label="Toggle the available filters"
+                            aria-label="Toggle the available filters (coming soon)"
                             isSelected={filters}
                             onChange={() => setFilters((v) => !v)}
                             isDisabled
@@ -657,14 +661,15 @@ export default function Home() {
                     >
                       <ToggleGroup aria-label="Filter controls">
                         <Tooltip
-                          content="Toggle the available filters"
+                          content="Toggle the available filters (coming soon)"
                           position="bottom"
                         >
                           <ToggleGroupItem
                             icon={<FilterIcon />}
-                            aria-label="Toggle the available filters"
+                            aria-label="Toggle the available filters (coming soon)"
                             isSelected={filters}
                             onChange={() => setFilters((v) => !v)}
+                            isDisabled
                           />
                         </Tooltip>
                       </ToggleGroup>
