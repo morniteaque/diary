@@ -74,6 +74,7 @@ import icon from "../docs/icon-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_DETAIL_KEY = "diary.detail";
+const DIARY_NSFW_KEY = "diary.nsfw";
 
 const TOPICS = [
   ["HRT", "hrt"],
@@ -267,8 +268,12 @@ const EntryCard: React.FC<IEntryCardProps> = ({
 export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [nsfw, setNSFW] = useState(false);
-  const [detail, setDetail] = useState(100);
+  const [nsfw, setNSFW] = useState(
+    (localStorage.getItem(DIARY_NSFW_KEY) || "false") === "true"
+  );
+  const [detail, setDetail] = useState(
+    parseInt(localStorage.getItem(DIARY_DETAIL_KEY) || "100")
+  );
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
   const [selectedEntryID, setSelectedEntryID] = useState(-1);
@@ -287,14 +292,12 @@ export default function Home() {
   const [scale, setScale] = useState("week");
 
   useEffect(() => {
-    const v = localStorage.getItem("diary.detail") || "100";
-
-    setDetail(parseInt(v));
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem(DIARY_DETAIL_KEY, detail.toString());
   }, [detail]);
+
+  useEffect(() => {
+    localStorage.setItem(DIARY_NSFW_KEY, nsfw ? "true" : "false");
+  }, [nsfw]);
 
   let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
