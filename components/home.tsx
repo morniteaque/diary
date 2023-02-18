@@ -344,9 +344,7 @@ export default function Home() {
   const filter = (e: IEntry) =>
     activeTopics.filter((v) => e.topics.includes(v)).length > 0 &&
     e.detail <= detail &&
-    nsfw
-      ? true
-      : !e.nsfw;
+    (nsfw ? true : !e.nsfw);
 
   switch (scale) {
     case "week": {
