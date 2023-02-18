@@ -77,6 +77,8 @@ const DIARY_NSFW_KEY = "diary.nsfw";
 const DIARY_DETAIL_KEY = "diary.detail";
 const DIARY_ACTIVE_TOPICS_KEY = "diary.activeTopics";
 
+const SELECTED_ENTRY_ID_QUERY_PARAM = "entry";
+
 const TOPICS = [
   ["HRT", "hrt"],
   ["FFS", "ffs"],
@@ -281,7 +283,13 @@ export default function Home() {
   );
   const [activeTab, setActiveTab] = useState(0);
   const [filters, setFilters] = useState(false);
-  const [selectedEntryID, setSelectedEntryID] = useState(-1);
+  const [selectedEntryID, setSelectedEntryID] = useState(
+    parseInt(
+      new URLSearchParams(window.location.search).get(
+        SELECTED_ENTRY_ID_QUERY_PARAM
+      ) || JSON.stringify(-1)
+    )
+  );
   const [currentPagination, setCurrentPagination] = useState(1);
   const [diaryEntryFullscreen, setDiaryEntryFullscreen] = useState(false);
   const [activeTopics, setActiveTopics] = useState(
@@ -312,6 +320,25 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(DIARY_ACTIVE_TOPICS_KEY, JSON.stringify(activeTopics));
   }, [activeTopics]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (selectedEntryID === -1) {
+      params.delete(SELECTED_ENTRY_ID_QUERY_PARAM);
+    } else {
+      params.set(
+        SELECTED_ENTRY_ID_QUERY_PARAM,
+        JSON.stringify(selectedEntryID)
+      );
+    }
+
+    history.pushState(
+      null,
+      "",
+      window.location.pathname + "?" + params.toString()
+    );
+  }, [selectedEntryID]);
 
   let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
@@ -441,7 +468,22 @@ export default function Home() {
   let wentBackwards = useRef(false);
   useEffect(() => {
     if (
-      (selectedEntryID == -1 ||
+      selectedEntryID !== -1 &&
+      !ENTRIES.map((v, id) => ({ id, ...v }))
+        .filter(filter)
+        .find((e) => e.id === selectedEntryID)
+    ) {
+      if (wentBackwards.current) {
+        setSelectedEntryID((e) => (e - 1 < 0 ? ENTRIES.length - 1 : e - 1));
+      } else {
+        setSelectedEntryID((e) => (e + 1 >= ENTRIES.length ? e : e + 1));
+      }
+
+      return;
+    }
+
+    if (
+      (selectedEntryID === -1 ||
         entriesToShow.find((e) => e.id === selectedEntryID)) &&
       !(activeTopics.length > 0 && entriesToShow.length === 0)
     ) {
@@ -836,9 +878,11 @@ export default function Home() {
                   <DrawerActions>
                     <Button
                       variant="plain"
-                      onClick={() =>
-                        setSelectedEntryID((e) => (e - 1 < 0 ? e : e - 1))
-                      }
+                      onClick={() => {
+                        wentBackwards.current = true;
+
+                        setSelectedEntryID((e) => (e - 1 < 0 ? e : e - 1));
+                      }}
                       aria-label="Go one page pack"
                     >
                       <ChevronLeftIcon />
@@ -854,11 +898,13 @@ export default function Home() {
 
                     <Button
                       variant="plain"
-                      onClick={() =>
+                      onClick={() => {
+                        wentBackwards.current = false;
+
                         setSelectedEntryID((e) =>
                           e + 1 >= ENTRIES.length ? e : e + 1
-                        )
-                      }
+                        );
+                      }}
                       aria-label="Go one page forward"
                     >
                       <ChevronRightIcon />
