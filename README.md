@@ -1,5 +1,7 @@
 # diary
 
+![Logo](./docs/logo-readme.png)
+
 An extensive transition diary site.
 
 ## Overview

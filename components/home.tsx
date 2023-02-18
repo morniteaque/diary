@@ -71,7 +71,7 @@ import {
 } from "@patternfly/react-icons";
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
-import icon from "../docs/icon-dark.png";
+import icon from "../docs/logo-dark.png";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_NSFW_KEY = "diary.nsfw";
