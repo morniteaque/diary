@@ -76,6 +76,7 @@ const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_NSFW_KEY = "diary.nsfw";
 const DIARY_DETAIL_KEY = "diary.detail";
 const DIARY_ACTIVE_TOPICS_KEY = "diary.activeTopics";
+const DIARY_SCALE_KEY = "diary.scale";
 
 const SELECTED_ENTRY_ID_QUERY_PARAM = "entry";
 
@@ -307,7 +308,11 @@ export default function Home() {
         ])
     ) as string[]
   );
-  const [scale, setScale] = useState("week");
+  const [scale, setScale] = useState(
+    JSON.parse(
+      localStorage.getItem(DIARY_SCALE_KEY) || JSON.stringify("week")
+    ) as string
+  );
 
   useEffect(() => {
     localStorage.setItem(DIARY_DETAIL_KEY, JSON.stringify(detail));
@@ -320,6 +325,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem(DIARY_ACTIVE_TOPICS_KEY, JSON.stringify(activeTopics));
   }, [activeTopics]);
+
+  useEffect(() => {
+    localStorage.setItem(DIARY_SCALE_KEY, JSON.stringify(scale));
+  }, [scale]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
