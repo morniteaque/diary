@@ -67,6 +67,7 @@ import {
   FilterIcon,
   HelpIcon,
   StampIcon,
+  EyeIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
@@ -228,7 +229,16 @@ const EntryCard: React.FC<IEntryCardProps> = ({
     }
     {...otherProps}
   >
-    <CardTitle>{entry.title}</CardTitle>
+    <CardTitle>
+      {entry.nsfw && (
+        <>
+          <Tooltip removeFindDomNode content="This is an NSFW entry">
+            <EyeIcon className="pf-u-mr-xs" />
+          </Tooltip>{" "}
+        </>
+      )}
+      {entry.title}
+    </CardTitle>
     <CardBody>{entry.text}</CardBody>
     <CardFooter>
       <Flex
@@ -651,6 +661,7 @@ export default function Home() {
                       alignment={{ default: "alignRight" }}
                     >
                       <Tooltip
+                        removeFindDomNode
                         content="Amount of detail to show for a given entry"
                         position="bottom"
                       >
@@ -690,6 +701,7 @@ export default function Home() {
                     <ToolbarItem className="pf-u-display-none pf-u-display-inline-flex-on-md">
                       <ToggleGroup aria-label="Filter controls">
                         <Tooltip
+                          removeFindDomNode
                           content="Toggle the available filters (coming soon)"
                           position="bottom"
                         >
@@ -727,6 +739,7 @@ export default function Home() {
                     >
                       <ToggleGroup aria-label="Filter controls">
                         <Tooltip
+                          removeFindDomNode
                           content="Toggle the available filters (coming soon)"
                           position="bottom"
                         >
@@ -1198,6 +1211,7 @@ export default function Home() {
 
                       <FlexItem className="pf-u-my-sm pf-u-my-0-on-sm">
                         <Tooltip
+                          removeFindDomNode
                           content="No imprint is required for this site as it is not for profit and does not operate as a newspaper or blog."
                           position="left-end"
                           enableFlip
