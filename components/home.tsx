@@ -64,15 +64,16 @@ import {
   CompressIcon,
   ExpandIcon,
   ExternalLinkAltIcon,
+  EyeIcon,
   FilterIcon,
   HelpIcon,
   StampIcon,
-  EyeIcon,
 } from "@patternfly/react-icons";
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
+import entries from "../data/entries.json";
+import meta from "../data/meta.json";
 import icon from "../docs/logo-dark.png";
-import aphreditto from "../data/aphreditto.json";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_NSFW_KEY = "diary.nsfw";
@@ -103,7 +104,7 @@ interface IEntry {
   nsfw: boolean;
 }
 
-const ENTRIES: IEntry[] = aphreditto.entries
+const ENTRIES: IEntry[] = entries.entries
   .sort((a, b) => a.date[0] - b.date[0])
   .map((e, i) => {
     const dateStr = e.date[0].toString();
@@ -140,7 +141,9 @@ const ENTRIES: IEntry[] = aphreditto.entries
     }
 
     return {
-      day: i,
+      day: Math.floor(
+        (date.getTime() - new Date(meta.startDay).getTime()) / DAY_MILLISECONDS
+      ),
       date,
       title: "Entry " + i,
       detail: detail / e.entry.filter((e) => e[0]).length || 1,
