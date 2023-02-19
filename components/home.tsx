@@ -372,6 +372,12 @@ export default function Home() {
           (DAY_MILLISECONDS * 7)
       );
 
+      if (currentPagination > maxPages) {
+        setCurrentPagination(1);
+
+        return;
+      }
+
       pageStartDate = new Date(
         earliestEntryDate.getFullYear(),
         earliestEntryDate.getMonth(),
@@ -402,6 +408,12 @@ export default function Home() {
     }
     case "month": {
       maxPages = latestEntryDate.getMonth() - earliestEntryDate.getMonth() + 1;
+
+      if (currentPagination > maxPages) {
+        setCurrentPagination(1);
+
+        return;
+      }
 
       pageStartDate = new Date(
         earliestEntryDate.getFullYear(),
@@ -435,6 +447,12 @@ export default function Home() {
       const filteredEntries = ENTRIES.filter(filter);
 
       maxPages = Math.ceil(filteredEntries.length / 4);
+
+      if (currentPagination > maxPages) {
+        setCurrentPagination(1);
+
+        return;
+      }
 
       pageStartIndex =
         currentPagination - 1 <= 0 ? 0 : (currentPagination - 1) * 4;
@@ -953,10 +971,7 @@ export default function Home() {
                             <ToolbarItem>
                               <FormSelect
                                 value={scale}
-                                onChange={(v) => {
-                                  setCurrentPagination(1);
-                                  setScale(v);
-                                }}
+                                onChange={(v) => setScale(v)}
                                 aria-label="Scale input"
                               >
                                 {[
