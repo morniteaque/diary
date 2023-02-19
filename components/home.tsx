@@ -216,7 +216,7 @@ const EntryCard: React.FC<IEntryCardProps> = ({
       )}
       {entry.title}
     </CardTitle>
-    <CardBody>{entry.text[0]?.substring(0, 100)}…</CardBody>
+    <CardBody>{entry.text[0]?.substring(0, 100)} …</CardBody>
     <CardFooter>
       <Flex
         justifyContent={{
@@ -400,7 +400,11 @@ export default function Home() {
       break;
     }
     case "month": {
-      maxPages = moment(latestEntryDate).diff(earliestEntryDate, "months");
+      maxPages = Math.round(
+        moment(latestEntryDate)
+          .endOf("month")
+          .diff(moment(earliestEntryDate).startOf("month"), "months", true)
+      );
 
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
@@ -1115,9 +1119,9 @@ export default function Home() {
 
                       {entriesToShow
                         .filter((e) =>
-                          moment(e.date).isSame(
+                          moment(e.date).isBetween(
                             moment(pageStartDate).add(i, "weeks"),
-                            "week"
+                            moment(pageStartDate).add(i + 1, "weeks")
                           )
                         )
                         .map((entry) => (
