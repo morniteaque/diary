@@ -369,7 +369,7 @@ export default function Home() {
 
   switch (scale) {
     case "week": {
-      maxPages = moment(latestEntryDate).diff(earliestEntryDate, "week");
+      maxPages = moment(latestEntryDate).diff(earliestEntryDate, "weeks");
 
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
@@ -387,24 +387,20 @@ export default function Home() {
         .endOf("week")
         .toDate();
 
-      pageStartIndex = ENTRIES.findIndex(
-        (e) =>
-          e.date.getTime() >= pageStartDate.getTime() &&
-          e.date.getTime() <= pageEndDate.getTime()
+      pageStartIndex = ENTRIES.findIndex((e) =>
+        moment(e.date).isBetween(pageStartDate, pageEndDate)
       );
 
       // See https://github.com/microsoft/TypeScript/issues/48829
       pageEndIndex =
-        (ENTRIES as any).findLastIndex(
-          (e: IEntry) =>
-            e.date.getTime() >= pageStartDate.getTime() &&
-            e.date.getTime() <= pageEndDate.getTime()
+        (ENTRIES as any).findLastIndex((e: IEntry) =>
+          moment(e.date).isBetween(pageStartDate, pageEndDate)
         ) + 1;
 
       break;
     }
     case "month": {
-      maxPages = latestEntryDate.getMonth() - earliestEntryDate.getMonth() + 1;
+      maxPages = moment(latestEntryDate).diff(earliestEntryDate, "months");
 
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
@@ -412,30 +408,24 @@ export default function Home() {
         break;
       }
 
-      pageStartDate = new Date(
-        earliestEntryDate.getFullYear(),
-        earliestEntryDate.getMonth() + (currentPagination - 1),
-        1
-      );
+      pageStartDate = moment(earliestEntryDate)
+        .add(currentPagination - 1, "months")
+        .startOf("month")
+        .toDate();
 
-      pageEndDate = new Date(
-        earliestEntryDate.getFullYear(),
-        earliestEntryDate.getMonth() + currentPagination,
-        0
-      );
+      pageEndDate = moment(earliestEntryDate)
+        .add(currentPagination - 1, "months")
+        .endOf("month")
+        .toDate();
 
-      pageStartIndex = ENTRIES.findIndex(
-        (e) =>
-          e.date.getTime() >= pageStartDate.getTime() &&
-          e.date.getTime() <= pageEndDate.getTime()
+      pageStartIndex = ENTRIES.findIndex((e) =>
+        moment(e.date).isBetween(pageStartDate, pageEndDate)
       );
 
       // See https://github.com/microsoft/TypeScript/issues/48829
       pageEndIndex =
-        (ENTRIES as any).findLastIndex(
-          (e: IEntry) =>
-            e.date.getTime() >= pageStartDate.getTime() &&
-            e.date.getTime() <= pageEndDate.getTime()
+        (ENTRIES as any).findLastIndex((e: IEntry) =>
+          moment(e.date).isBetween(pageStartDate, pageEndDate)
         ) + 1;
 
       break;
@@ -1077,17 +1067,13 @@ export default function Home() {
                           {day} ·{" "}
                           <span className="pf-u-color-300">
                             Day{" "}
-                            {(() => {
-                              const diff = Math.round(
-                                -moment(meta.startDate).diff(
-                                  moment(pageStartDate).add(i, "days"),
-                                  "days",
-                                  true
-                                )
-                              );
-
-                              return diff;
-                            })()}
+                            {Math.round(
+                              -moment(meta.startDate).diff(
+                                moment(pageStartDate).add(i, "days"),
+                                "days",
+                                true
+                              )
+                            )}
                           </span>
                         </div>
 
@@ -1114,23 +1100,25 @@ export default function Home() {
 
               {scale === "month" && (
                 <Grid className="pf-x-c-grid pf-x-c-grid--month pf-u-p-md">
-                  {["Week 1", "Week 2", "Week 3", "Week 4"].map((week, i) => (
+                  {[0, 1, 2, 3].map((_, i) => (
                     <GridItem span={1} key={i}>
-                      <div className="pf-x-c-grid__header">{week}</div>
+                      <div className="pf-x-c-grid__header">
+                        Week{" "}
+                        {Math.round(
+                          -moment(meta.startDate).diff(
+                            moment(pageStartDate).add(i, "weeks"),
+                            "weeks",
+                            true
+                          )
+                        )}
+                      </div>
 
                       {entriesToShow
-                        .filter(
-                          (e) =>
-                            Math.ceil(
-                              (e.date.getDate() +
-                                new Date(
-                                  e.date.getFullYear(),
-                                  e.date.getMonth(),
-                                  1
-                                ).getDay()) /
-                                7
-                            ) ==
-                            i + 1
+                        .filter((e) =>
+                          moment(e.date).isSame(
+                            moment(pageStartDate).add(i, "weeks"),
+                            "week"
+                          )
                         )
                         .map((entry) => (
                           <EntryCard
