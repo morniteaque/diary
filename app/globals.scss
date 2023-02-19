@@ -258,3 +258,9 @@ $color--substance-use: #ff7e74;
     border-color: #{$color--substance-use} !important;
   }
 }
+
+.pf-c-drawer__body--text {
+  max-width: $pf-global--breakpoint--lg;
+  margin-left: auto;
+  margin-right: auto;
+}

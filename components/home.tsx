@@ -932,7 +932,7 @@ export default function Home() {
                     <DrawerCloseButton onClick={() => setSelectedEntryID(-1)} />
                   </DrawerActions>
                 </DrawerHead>
-                <DrawerPanelBody>
+                <DrawerPanelBody className="pf-c-drawer__body--text">
                   <TextContent>
                     {ENTRIES[selectedEntryID]?.text.map((t, i) => (
                       <Text key={i} component={TextVariants.p}>
