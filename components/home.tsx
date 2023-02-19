@@ -74,6 +74,7 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import entries from "../data/entries.json";
 import meta from "../data/meta.json";
 import icon from "../docs/logo-dark.png";
+import moment from "moment";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_NSFW_KEY = "diary.nsfw";
@@ -142,7 +143,7 @@ const ENTRIES: IEntry[] = entries.entries
 
     return {
       day: Math.floor(
-        (date.getTime() - new Date(meta.startDay).getTime()) / DAY_MILLISECONDS
+        (date.getTime() - new Date(meta.startDate).getTime()) / DAY_MILLISECONDS
       ),
       date,
       title: "Entry " + i,
@@ -335,11 +336,10 @@ export default function Home() {
     );
   }, [selectedEntryID]);
 
-  let { earliestEntryDate, earliestEntry, latestEntryDate } = ENTRIES.reduce(
+  let { earliestEntryDate, latestEntryDate } = ENTRIES.reduce(
     (prev, curr) => {
       if (!prev.earliestEntryDate || curr.date < prev.earliestEntryDate) {
         prev.earliestEntryDate = curr.date;
-        prev.earliestEntry = curr;
       }
 
       if (!prev.latestEntryDate || curr.date > prev.latestEntryDate) {
@@ -350,7 +350,6 @@ export default function Home() {
     },
     {
       earliestEntryDate: new Date(),
-      earliestEntry: {} as IEntry,
       latestEntryDate: new Date(),
     }
   );
@@ -370,28 +369,23 @@ export default function Home() {
 
   switch (scale) {
     case "week": {
-      maxPages = Math.round(
-        (latestEntryDate.getTime() - earliestEntryDate.getTime()) /
-          (DAY_MILLISECONDS * 7)
-      );
+      maxPages = moment(latestEntryDate).diff(earliestEntryDate, "week");
 
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
 
-        return;
+        break;
       }
 
-      pageStartDate = new Date(
-        earliestEntryDate.getFullYear(),
-        earliestEntryDate.getMonth(),
-        1 + (currentPagination - 1) * 7
-      );
+      pageStartDate = moment(earliestEntryDate)
+        .add(currentPagination - 1, "weeks")
+        .startOf("week")
+        .toDate();
 
-      pageEndDate = new Date(
-        earliestEntryDate.getFullYear(),
-        earliestEntryDate.getMonth(),
-        0 + currentPagination * 7
-      );
+      pageEndDate = moment(earliestEntryDate)
+        .add(currentPagination - 1, "weeks")
+        .endOf("week")
+        .toDate();
 
       pageStartIndex = ENTRIES.findIndex(
         (e) =>
@@ -415,7 +409,7 @@ export default function Home() {
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
 
-        return;
+        break;
       }
 
       pageStartDate = new Date(
@@ -454,7 +448,7 @@ export default function Home() {
       if (currentPagination > maxPages) {
         setCurrentPagination(1);
 
-        return;
+        break;
       }
 
       pageStartIndex =
@@ -1083,11 +1077,17 @@ export default function Home() {
                           {day} ·{" "}
                           <span className="pf-u-color-300">
                             Day{" "}
-                            {earliestEntry.day +
-                              ((currentPagination - 1) * DAY_MILLISECONDS * 7 +
-                                i * DAY_MILLISECONDS) /
-                                DAY_MILLISECONDS -
-                              earliestEntryDate.getDay()}
+                            {(() => {
+                              const diff = Math.round(
+                                -moment(meta.startDate).diff(
+                                  moment(pageStartDate).add(i, "days"),
+                                  "days",
+                                  true
+                                )
+                              );
+
+                              return diff;
+                            })()}
                           </span>
                         </div>
 
