@@ -72,6 +72,7 @@ import {
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import icon from "../docs/logo-dark.png";
+import aphreditto from "../data/aphreditto.json";
 
 const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
 const DIARY_NSFW_KEY = "diary.nsfw";
@@ -96,86 +97,58 @@ interface IEntry {
   day: number;
   date: Date;
   title: string;
-  text: string;
+  text: string[];
   topics: string[];
   detail: number;
   nsfw: boolean;
 }
 
-const ENTRIES: IEntry[] = [
-  {
-    day: 0,
-    date: new Date("2023-01-03 10:30"),
-    title: "Dolor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
-    topics: ["substance-use"],
-    detail: 10,
-    nsfw: false,
-  },
-  {
-    day: 17,
-    date: new Date("2023-01-20 11:30"),
-    title: "Lorem",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
-    topics: ["coming-out"],
-    detail: 1,
-    nsfw: false,
-  },
-  {
-    day: 20,
-    date: new Date("2023-01-23 09:30"),
-    title: "Lorem",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit …",
-    topics: ["hrt"],
-    detail: 65,
-    nsfw: false,
-  },
-  {
-    day: 20,
-    date: new Date("2023-01-23 16:30"),
-    title: "Ipsum",
-    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["ffs", "hrt"],
-    detail: 20,
-    nsfw: true,
-  },
-  {
-    day: 21,
-    date: new Date("2023-01-24"),
-    title: "Amet",
-    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["ffs", "domperidone"],
-    detail: 30,
-    nsfw: false,
-  },
-  {
-    day: 22,
-    date: new Date("2023-01-25"),
-    title: "Consectur",
-    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["coming-out"],
-    detail: 40,
-    nsfw: false,
-  },
-  {
-    day: 23,
-    date: new Date("2023-01-26"),
-    title: "Ducimus",
-    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["substance-use", "ibutamoren"],
-    detail: 100,
-    nsfw: true,
-  },
-  {
-    day: 30,
-    date: new Date("2023-02-02"),
-    title: "Ducimusss",
-    text: "Dolor sit amet consectetur adipisicing elit lorem ipsum …",
-    topics: ["substance-use", "ibutamoren"],
-    detail: 50,
-    nsfw: true,
-  },
-];
+const ENTRIES: IEntry[] = aphreditto.entries
+  .sort((a, b) => a.date[0] - b.date[0])
+  .map((e, i) => {
+    const dateStr = e.date[0].toString();
+
+    const date = new Date(
+      parseInt(dateStr.substring(0, 4)),
+      parseInt(dateStr.substring(4, 6)) - 1,
+      parseInt(dateStr.substring(6, 8)),
+      parseInt(dateStr.substring(8, 10)),
+      parseInt(dateStr.substring(10, 12)),
+      parseInt(dateStr.substring(12, 14))
+    );
+
+    const detail = e.entry
+      .filter((e) => e[0])
+      .reduce((prev, curr) => prev + (curr[0] as number), 0);
+
+    const topics = ["hrt", "domperidone", "coming-out"] as string[];
+
+    if (e.properties.tags.ffs) {
+      topics.push("ffs");
+    }
+
+    if (e.properties.tags.srs) {
+      topics.push("srs");
+    }
+
+    if (e.properties.tags.depression) {
+      topics.push("depression");
+    }
+
+    if (e.properties.tags.substanceUse) {
+      topics.push("depression");
+    }
+
+    return {
+      day: i,
+      date,
+      title: "Entry " + i,
+      detail: detail / e.entry.filter((e) => e[0]).length || 1,
+      nsfw: e.properties.nsfw,
+      text: e.entry.filter((e) => e[2]).map((e) => e[2].toString()),
+      topics,
+    };
+  });
 
 const TopicsChips: React.FC<{ topics: string[]; className?: string }> = ({
   topics,
@@ -239,7 +212,7 @@ const EntryCard: React.FC<IEntryCardProps> = ({
       )}
       {entry.title}
     </CardTitle>
-    <CardBody>{entry.text}</CardBody>
+    <CardBody>{entry.text[0]?.substring(0, 100)}…</CardBody>
     <CardFooter>
       <Flex
         justifyContent={{
@@ -251,12 +224,12 @@ const EntryCard: React.FC<IEntryCardProps> = ({
       >
         <FlexItem>
           {showDate
-            ? entry.date.toLocaleTimeString("default", {
-                weekday: "short",
+            ? entry.date.toLocaleString("default", {
+                year: "numeric",
+                day: "numeric",
+                month: "numeric",
                 hour: "numeric",
                 minute: "numeric",
-                month: showMonth ? "short" : undefined,
-                day: showMonth ? "numeric" : undefined,
               })
             : entry.date.toLocaleTimeString("default", {
                 hour: "numeric",
@@ -530,7 +503,7 @@ export default function Home() {
 
       return 1;
     });
-  }, [selectedEntryID, currentPagination, detail, activeTopics, nsfw]);
+  }, [scale, selectedEntryID, currentPagination, detail, activeTopics, nsfw]);
 
   return (
     <Page
@@ -942,14 +915,13 @@ export default function Home() {
                   </DrawerActions>
                 </DrawerHead>
                 <DrawerPanelBody>
-                  <Flex
-                    spaceItems={{ default: "spaceItemsLg" }}
-                    direction={{ default: "column" }}
-                  >
-                    <FlexItem>
-                      <p>{ENTRIES[selectedEntryID]?.text}</p>
-                    </FlexItem>
-                  </Flex>
+                  <TextContent>
+                    {ENTRIES[selectedEntryID]?.text.map((t, i) => (
+                      <Text key={i} component={TextVariants.p}>
+                        {t}
+                      </Text>
+                    ))}
+                  </TextContent>
                 </DrawerPanelBody>
               </DrawerPanelContent>
             }
